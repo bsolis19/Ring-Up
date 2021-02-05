@@ -1,8 +1,7 @@
-venv/
 *.swp
-*.py
 
 .*_cache
+*__pycache___/
 
 dist/
 build/
