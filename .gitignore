@@ -1,0 +1,10 @@
+venv/
+*.swp
+*.py
+
+.*_cache
+
+dist/
+build/
+*.egg-info/
+
