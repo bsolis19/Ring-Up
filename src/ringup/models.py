@@ -72,6 +72,10 @@ class Addon(Product):
         self._cost = round(value + self.product.cost, 2)
     @property
     def description(self):
+        return self._description
 
-
+    @description.setter
+    def description(self, value):
+        self._description = self.product.description + " " + self.product.title + " " + value + " " + self.addontitle
+        self.addondescription = value
 
