@@ -1,7 +1,8 @@
 *.swp
 
-.*_cache
-*__pycache___/
+*_cache/
+*__pycache__/
+
 
 dist/
 build/
