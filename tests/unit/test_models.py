@@ -93,7 +93,7 @@ class TestProduct:
 @pytest.fixture()
 def an_addon(a_product):
     """Return some simple addon."""
-    return Addon(a_product, "Bevel Finish", 3.49, "2-inch bevel")
+    return Addon(a_product, "Bevel Finish", 3.49, "2-inch")
 
 class TestAddon:
     def test_member_access(self, a_product, an_addon):
@@ -102,11 +102,41 @@ class TestAddon:
         assert a.product == a_product
         assert a.title == a_product.title + " +Bevel Finish"
         assert a.cost == round(a_product.cost + 3.49, 2)
-        # TODO assert a.description = "TODO"
+        assert a.description == a_product.description + " " + a_product.title + " " + "2-inch Bevel Finish"
 
         a_with_new_attr = Addon(a_product, a.addontitle, a.addoncost, a.addondescription, bevel_size=2)
         assert a_with_new_attr.bevel_size == 2
 
+    def test_defaults(self, an_addon):
+        """Using no optional parameters should invoke defaults."""
+        a = an_addon
+        a1 = Addon(a.product, a.addontitle, a.addoncost)
+        a2 = Addon(a.product, a.addontitle, a.addoncost, "")
+
+        assert a1 == a2
+
+    def test_member_mutate(self, an_addon):
+        """Check .field = value functionality of Addon."""
+        NEW_TITLE = "Foo"
+        NEW_COST = 5
+        NEW_DESCRIPTION = "foo description"
+
+        a = an_addon
+        assert (a.title, a.cost, a.description) != (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
+
+        a.title = NEW_TITLE
+        a.cost = NEW_COST
+        a.description = NEW_DESCRIPTION
+
+        assert (a.addontitle, a.addoncost, a.addondescription) == (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
 
 
+    def test_new_addon_raises_TypeError(self, a_product, invalid_type_data):
+        """Addon() should raise an exception with invalid param."""
+        with pytest.raises(TypeError):
+            Addon(a_product, **invalid_type_data)
 
+    def test_new_addon_raises_ValueError(self, a_product, invalid_value_data):
+        """Addon() should raise an exception with invalid param."""
+        with pytest.raises(ValueError):
+            Addon(a_product, **invalid_value_data)
