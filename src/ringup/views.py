@@ -12,3 +12,8 @@ class ProductForm(tk.Frame):
         super().__init__(parent, *args, **kwargs)
         self.inputs = {}
 
+if __name__=='__main__':
+    app = tk.Tk()
+    ProductForm(app)
+    app.title(APP_NAME)
+    app.mainloop()

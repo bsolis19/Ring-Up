@@ -14,8 +14,8 @@ class LabelInput(tk.Frame):
             input_var=None,
             input_args=None,
             label_args=None,
-            **kwargs,
-            )
+            **kwargs
+            ):
         super().__init__(parent, **kwargs)
         input_args = input_args or {}
         label_args = label_args or {}
@@ -58,10 +58,10 @@ class LabelInput(tk.Frame):
                 self.input.select()
             else:
                 self.input.deselect()
-            elif type(self.input) == tk.Text:
-                self.input.delete('1.0', tk.END)
-                self.input.insert('1.0', value)
-            else: # input must be an Entry-type widget with no variable
-                self.input.delete(0, tk.END)
-                self.input.insert(0, value)
+        elif type(self.input) == tk.Text:
+            self.input.delete('1.0', tk.END)
+            self.input.insert('1.0', value)
+        else: # input must be an Entry-type widget with no variable
+            self.input.delete(0, tk.END)
+            self.input.insert(0, value)
 
