@@ -2,13 +2,15 @@
 
 import tkinter as tk
 from tkinter import ttk
+from abc import ABC, abstractmethod
 
 from . import widgets as w
 
-class ProductForm(tk.Frame):
+class ProductForm(ABC):
     """The main input form for ringup."""
 
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.inputs = {}
+    @abstractmethod
+    def __init__(self, container_class, parent, *args, **kwargs):
+        self.container = container_class(parent)
 
+class TKProductForm(ProductForm):
