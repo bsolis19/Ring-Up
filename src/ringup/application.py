@@ -18,6 +18,6 @@ class Application():
         pass
 
     def start(self):
-        self.gui.activate()
+        self.gui.mainloop()
 
 
