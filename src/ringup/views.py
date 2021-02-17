@@ -22,8 +22,26 @@ class ProductForm(Form):
         self.current_product = None
 
         # build the form
-        self.product_label = ttk.Label(self)
+        self.product_label = ttk.Label(self, text="PRODUCT")
         self.product_label.grid(row=0, column=0)
+
+        # product specifications section
+        specsinfo = tk.LabelFrame(
+                self,
+                text='Product Specifications',
+                bg='khaki',
+                padx=10,
+                pady=10,
+            )
+
+        self.inputs['dummy'] = w.LabelInput(
+                specsinfo,
+                'Dummy',
+                field_spec=None,
+                label_args=None,
+            )
+        self.inputs['dummy'].grid(row=0, column=0)
+        specsinfo.grid(row=1, column=0, sticky='we')
 
 
 
