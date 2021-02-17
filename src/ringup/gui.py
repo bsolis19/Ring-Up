@@ -9,7 +9,7 @@ class GUI(tk.Tk):
     def __init__(self, title, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title(title)
-        self._build(*args, **kwargs)
+        self._build()
 
     def _build(self):
         self.createProductForm()

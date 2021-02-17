@@ -6,23 +6,24 @@ from abc import ABC, abstractmethod
 
 from . import widgets as w
 
-class Form(Tk.Frame):
+class Form(tk.Frame):
 
-    def __init__(self, parent, model, *args, **kwargs):
+    def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
-        self.model = model
+        self.settings = settings
+        self.callbacks = callbacks
         self.inputs = {}
 
 class ProductForm(Form):
     """The main input form for ringup."""
+    def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
+        super().__init__(parent, model, settings, callbacks, *args, **kwargs)
 
-    def layout(self):
-        pass
+        self.current_product = None
 
-    def buildProperties(self):
-        pass
+        # build the form
+        self.product_label = ttk.Label(self)
+        self.product_label.grid(row=0, column=0)
 
-    def buildAddonsEntries(self):
-        pass
 
 
