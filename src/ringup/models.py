@@ -1,14 +1,17 @@
 """Data models for ringup project"""
 
+import re
+
 from collections import namedtuple
 
 CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 
 class Product:
-    def __init__(self, title, cost, description='', **extras):
+    def __init__(self, title, cost, description='', costformula='', **extras):
         self.title = title
         self.cost = cost
         self.description = description
+        self.costformula = costformula
         self.__dict__.update(extras)
 
     @property
@@ -29,6 +32,15 @@ class Product:
     def cost(self, value):
         self._validate_cost(value)
         self._cost = value
+
+    @property
+    def costformula(self):
+        return self._costformula
+
+    @costformula.setter
+    def costformula(self, value):
+        #words = re.match(r'\W+', value)
+        pass
 
     def _validate_cost(self, cost):
         if (cost < 0):
