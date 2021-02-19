@@ -39,8 +39,8 @@ class Product:
 
     @costformula.setter
     def costformula(self, value):
-        #words = re.match(r'\W+', value)
-        pass
+        self._costformula = value
+        self._cost = value.simplify()
 
     def _validate_cost(self, cost):
         if (cost < 0):
@@ -91,3 +91,26 @@ class Addon(Product):
         self._description = self.product.description + " " + self.product.title + " " + value + " " + self.addontitle
         self.addondescription = value
 
+class CostFormula:
+    def __init__(self, formula_str, attr_dict):
+        self.formula_str = formula_str
+        self.attr_dict = attr_dict
+
+    @property
+    def formula_str(self):
+        return self._formula_str
+
+    @formula_str.setter
+    def formula_str(self, value):
+        self._validate_formula(value)
+        self._formula_str = value
+
+    def simplify(self):
+        mapped = ''
+        for attr in self.attr_dict:
+            mapped = re.sub(attr, str(self.attr_dict[attr]), self.formula_str)
+
+        return eval(mapped)
+
+    def _validate_formula(self, str_):
+        pass
