@@ -6,6 +6,7 @@ from collections import namedtuple
 
 CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 
+@logged
 class Product:
     def __init__(self, title, cost, description='', costformula='', **extras):
         self.title = title
@@ -63,6 +64,7 @@ class Product:
 
     __hash__ = None
 
+@logged
 class Addon(Product):
     def __init__(self, product, *args, **extras):
         self.product = product
@@ -91,6 +93,7 @@ class Addon(Product):
         self._description = self.product.description + " " + self.product.title + " " + value + " " + self.addontitle
         self.addondescription = value
 
+@logged
 class CostFormula:
     def __init__(self, formula_str, attr_dict):
         self.formula_str = formula_str
