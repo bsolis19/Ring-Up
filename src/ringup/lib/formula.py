@@ -60,7 +60,8 @@ def p_statement_expression(t):
     '''
     statement : expression
     '''
-    return str([1].value)
+    global value
+    value = t[1]
 
 def p_expression_binop(t):
     '''
@@ -136,4 +137,6 @@ def p_error(t):
 lexer = lex.lex()
 parser = yacc.yacc(debug=0, write_tables=0)
 
+# use value for debugging
+value = None
 parse = parser.parse
