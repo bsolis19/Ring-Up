@@ -1,6 +1,10 @@
 """Data models for ringup project"""
 
 import re
+import ringup.lib.formula as fi
+
+
+from ringup.lib.log import *
 
 from collections import namedtuple
 
@@ -25,9 +29,10 @@ class Product:
             self._title = value.title()
         except AttributeError:
             raise TypeError
+
     @property
     def cost(self):
-        return self._cost
+        return self._cost or self.costformula.get_cost()
 
     @cost.setter
     def cost(self, value):
@@ -41,7 +46,6 @@ class Product:
     @costformula.setter
     def costformula(self, value):
         self._costformula = value
-        self._cost = value.simplify()
 
     def _validate_cost(self, cost):
         if (cost < 0):
@@ -69,21 +73,26 @@ class Addon(Product):
     def __init__(self, product, *args, **extras):
         self.product = product
         super().__init__(*args, **extras)
+
     @property
     def title(self):
         return self._title
+
     @title.setter
     def title(self, value):
         self.addontitle = value
         self._title = self.product.title + " +" + value
+
     @property
     def cost(self):
         return self._cost
+
     @cost.setter
     def cost(self, value):
         self._validate_cost(value)
         self.addoncost = value
         self._cost = round(value + self.product.cost, 2)
+
     @property
     def description(self):
         return self._description
@@ -95,26 +104,30 @@ class Addon(Product):
 
 @logged
 class CostFormula:
-    def __init__(self, formula_str, attr_dict):
-        self.formula_str = formula_str
-        self.attr_dict = attr_dict
+    def __init__(self, formula, variables):
+        self.variables = variables
+        self.formula = formula
 
     @property
-    def formula_str(self):
-        return self._formula_str
+    def formula(self):
+        return self._formula
 
-    @formula_str.setter
-    def formula_str(self, value):
-        self._validate_formula(value)
-        self._formula_str = value
+    @formula.setter
+    def formula(self, value):
+        self._validate_formula(CostFormula._get_hard(value, self.variables))
+        self._formula = value
 
-    def simplify(self):
-        mapped = ''
-        for attr in self.attr_dict:
-            mapped = re.sub(attr, str(self.attr_dict[attr]), self.formula_str)
+    def get_cost(self):
+        return fi.parse(CostFormula._get_hard(self.formula, self.variables))
 
-        return eval(mapped)
+    @staticmethod
+    def _get_hard(formula, variables):
+        s = formula
+        for x in variables:
+            s = re.sub(x, str(variables[x]), s)
+        return s
 
     def _validate_formula(self, str_):
+        fi.parse(str_)
 
 
