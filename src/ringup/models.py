@@ -10,6 +10,7 @@ from collections import namedtuple
 
 CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 
+
 @logged
 class Product:
     def __init__(self, title, cost, description='', costformula='', **extras):
@@ -56,17 +57,19 @@ class Product:
 
     def __repr__(self):
         return "{__class__.__name__}({_args_str})".format(
-                __class__ = self.__class__,
-                _args_str = ", ".join(
+                __class__=self.__class__,
+                _args_str=", ".join(
                     "=".join(
                         (str(key), repr(val))
                         ) for key, val in vars(self).items()
                     )
                 )
+
     def __eq__(self, other):
         return vars(self) == vars(other)
 
     __hash__ = None
+
 
 @logged
 class Addon(Product):
@@ -99,8 +102,10 @@ class Addon(Product):
 
     @description.setter
     def description(self, value):
-        self._description = self.product.description + " " + self.product.title + " " + value + " " + self.addontitle
+        self._description = self.product.description +\
+            " " + self.product.title + " " + value + " " + self.addontitle
         self.addondescription = value
+
 
 @logged
 class CostFormula:
@@ -129,5 +134,3 @@ class CostFormula:
 
     def _validate_formula(self, str_):
         fi.parse(str_)
-
-
