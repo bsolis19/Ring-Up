@@ -28,15 +28,18 @@ t_ignore = ' \t'
 VALUE_ERR_T = "invalid value: '%s'"
 SYNTAX_ERR_T = "invalid character: '%s'"
 
+
 def t_NUMBER_DOUBLE(t):
     r'\d+\.\d+'
     t.value = float(t.value)
     return t
 
+
 def t_NUMBER_INT(t):
     r'\d+'
     t.value = int(t.value)
     return t
+
 
 def t_error(t):
     # Handle illegal character
@@ -56,12 +59,14 @@ variables = {
 
 start = 'statement'
 
+
 def p_statement_expression(t):
     '''
     statement : expression
     '''
     global value
     value = t[1]
+
 
 def p_expression_binop(t):
     '''
@@ -79,17 +84,20 @@ def p_expression_binop(t):
     elif t[2] == '/':
         t[0] = t[1] / t[3]
 
+
 def p_expression_uminus(t):
     '''
     expression : MINUS expression %prec UMINUS
     '''
     t[0] = -t[2]
 
+
 def p_expression_group(t):
     '''
     expression : LPAREN expression RPAREN
     '''
     t[0] = t[2]
+
 
 def p_expressions(t):
     '''
@@ -102,13 +110,14 @@ def p_expressions(t):
         return
     t[0] = [t[1]] if len(t) == 2 else t[1] + [t[3]]
 
+
 def p_expression_function(t):
     '''
     expression : NAME LPAREN expressions RPAREN
     '''
     if t[1] == 'sin':
         if len(t[3]) == 1:
-            t[0]=math.sin(float(t[3][0]))
+            t[0] = math.sin(float(t[3][0]))
             return
         else:
             # Handle missing/too many function arg
@@ -117,6 +126,7 @@ def p_expression_function(t):
         # Handle undefined function
         raise ValueError(VALUE_ERR_T % t[1])
 
+
 def p_expression_number(t):
     '''
     expression : NUMBER_INT
@@ -124,15 +134,18 @@ def p_expression_number(t):
     '''
     t[0] = t[1]
 
+
 def p_expression_name(t):
     '''
     expression : NAME
     '''
     t[0] = variables[t[1]]
 
+
 def p_error(t):
     # Handle syntax error
     raise SyntaxError(SYNTAX_ERR_T % t[0])
+
 
 lexer = lex.lex()
 parser = yacc.yacc(debug=0, write_tables=0)
