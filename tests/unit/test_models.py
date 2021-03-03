@@ -242,6 +242,13 @@ class TestCostFormula:
 
         assert (cf.formula, cf.variables) == (NEW_FORMULA, NEW_VARIABLES)
 
+    def test_lt_comparison(self, a_costformula):
+        assert int(a_costformula.get_cost()) > 0
+        assert a_costformula > 0
+
+    def test_get_cost(self, a_costformula):
+        assert a_costformula.get_cost() == 6
+
     def test_new_costformula_raises_TypeError(self,
                                               invalid_type_costformula_data):
         """CostFormula() should raise an exceptionwith invalid param."""

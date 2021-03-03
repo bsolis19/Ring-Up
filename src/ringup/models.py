@@ -13,11 +13,10 @@ CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 
 @logged
 class Product:
-    def __init__(self, title, cost, description='', costformula='', **extras):
+    def __init__(self, title, cost, description='', **extras):
         self.title = title
         self.cost = cost
         self.description = description
-        self.costformula = costformula
         self.__dict__.update(extras)
 
     @property
@@ -33,20 +32,16 @@ class Product:
 
     @property
     def cost(self):
-        return self._cost or self.costformula.get_cost()
+        # cost can be a CostFormula instance
+        try:
+            return self._cost.get_cost()
+        except AttributeError:
+            return self._cost
 
     @cost.setter
     def cost(self, value):
         self._validate_cost(value)
         self._cost = value
-
-    @property
-    def costformula(self):
-        return self._costformula
-
-    @costformula.setter
-    def costformula(self, value):
-        self._costformula = value
 
     def _validate_cost(self, cost):
         if (cost < 0):
@@ -113,6 +108,12 @@ class CostFormula:
         self.variables = variables
         self.formula = formula
 
+        self.logger.debug("[init] formula {0}, variables {1}".format(
+                formula,
+                variables,
+            )
+        )
+
     @property
     def formula(self):
         return self._formula
@@ -123,7 +124,15 @@ class CostFormula:
         self._formula = value
 
     def get_cost(self):
-        return fi.parse(CostFormula._get_hard(self.formula, self.variables))
+        hard = CostFormula._get_hard(self.formula, self.variables)
+        fi.parse(hard)
+        self.logger.debug('[get_cost] parsed {0} ({1}) -> {2}'.format(
+                self.formula,
+                hard,
+                fi.value,
+            )
+        )
+        return fi.value
 
     @staticmethod
     def _get_hard(formula, variables):
@@ -134,3 +143,9 @@ class CostFormula:
 
     def _validate_formula(self, str_):
         fi.parse(str_)
+
+    def __lt__(self, other):
+        return self.get_cost() < other
+
+    def __gt__(self, other):
+        return self.get_cost() > other
