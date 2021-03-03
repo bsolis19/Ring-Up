@@ -4,7 +4,7 @@ import re
 import ringup.lib.formula as fi
 
 
-from ringup.lib.log import *
+from ringup.lib.log import logged
 
 from collections import namedtuple
 

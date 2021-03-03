@@ -82,6 +82,8 @@ def p_expression_binop(t):
     elif t[2] == '*':
         t[0] = t[1] * t[3]
     elif t[2] == '/':
+        if t[3] == 0:
+            raise ValueError('division by zero invalid')
         t[0] = t[1] / t[3]
 
 
