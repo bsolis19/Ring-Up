@@ -64,6 +64,12 @@ def a_product():
 
 
 @pytest.fixture()
+def an_addon(a_product):
+    """Return some simple addon."""
+    return Addon(a_product, "Bevel Finish", 3.49, "2-inch")
+
+
+@pytest.fixture()
 def a_costformula():
     """Return something simple."""
     return CostFormula("a+b+c", {'a': 1, 'b': 2, 'c': 3})
@@ -123,13 +129,6 @@ class TestProduct:
         p_with_new_attr = Product(p.title, p.cost, p.description, size="48x96")
         assert p_with_new_attr.size == "48x96"
 
-    def test_defaults(self, a_product):
-        """Using no optional parameters should invoke defaults."""
-        p = a_product
-        p1 = Product(p.title, p.cost)
-        p2 = Product(p.title, p.cost, "")
-        assert p1 == p2
-
     def test_member_mutate(self, a_product):
         """Check .field = value functionality of Product."""
         NEW_TITLE = "Foo"
@@ -147,6 +146,21 @@ class TestProduct:
         assert (p.title, p.cost, p.description) ==\
             (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
 
+    def test_defaults(self, a_product):
+        """Using no optional parameters should invoke defaults."""
+        p = a_product
+        p1 = Product(p.title, p.cost)
+        p2 = Product(p.title, p.cost, "")
+        assert p1 == p2
+
+    def test_cost_as_CostFormula(self, a_product, a_costformula):
+        """cost attribute should return cost of costfomula."""
+        p = a_product
+        assert a_costformula.get_cost() == 6
+        p.cost = a_costformula
+
+        assert p.cost == 6
+
     def test_new_product_raises_TypeError(self, invalid_type_product_data):
         """Product() should raise an exception with invalid param."""
         with pytest.raises(TypeError):
@@ -156,12 +170,6 @@ class TestProduct:
         """Product() should raise an exception with invalid param."""
         with pytest.raises(ValueError):
             Product(**invalid_value_product_data)
-
-
-@pytest.fixture()
-def an_addon(a_product):
-    """Return some simple addon."""
-    return Addon(a_product, "Bevel Finish", 3.49, "2-inch")
 
 
 class TestAddon:
