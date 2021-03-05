@@ -3,6 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""
 
@@ -26,13 +27,11 @@ class LabelInput(tk.Frame):
         input_args["textvariable"] = input_var
         self.input = input_class(self, **input_args)
         self.input.grid(row=0, column=1, sticky=(tk.N + tk.S))
-        #self.rowconfigure(0, weight=1)
-
+        # self.rowconfigure(0, weight=1)
 
     # Create default behavior for grid invocation
     def grid(self, sticky=(tk.N + tk.S), **kwargs):
         super().grid(sticky=sticky, **kwargs)
-
 
     # Create wrapper method for the input class' get()
     def get(self):
@@ -61,7 +60,6 @@ class LabelInput(tk.Frame):
         elif type(self.input) == tk.Text:
             self.input.delete('1.0', tk.END)
             self.input.insert('1.0', value)
-        else: # input must be an Entry-type widget with no variable
+        else:  # input must be an Entry-type widget with no variable
             self.input.delete(0, tk.END)
             self.input.insert(0, value)
-

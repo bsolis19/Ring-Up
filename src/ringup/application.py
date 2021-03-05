@@ -8,6 +8,7 @@ from . import models as m
 from . import settings as s
 from .mainmenu import get_main_menu_for_os
 
+
 class Application(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -21,7 +22,7 @@ class Application(tk.Tk):
 
         # settings model & settings
         config_dir = s.CONFIG_DIR or '~'
-        self.settings_model=m.SettingsModel(path=config_dir)
+        self.settings_model = m.SettingsModel(path=config_dir)
         self.load_settings()
 
         self.callbacks = {
@@ -88,4 +89,3 @@ class Application(tk.Tk):
 
     def on_save(self):
         pass
-

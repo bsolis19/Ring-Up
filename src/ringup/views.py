@@ -2,9 +2,9 @@
 
 import tkinter as tk
 from tkinter import ttk
-from abc import ABC, abstractmethod
 
 from . import widgets as w
+
 
 class Form(tk.Frame):
 
@@ -13,6 +13,7 @@ class Form(tk.Frame):
         self.settings = settings
         self.callbacks = callbacks
         self.inputs = {}
+
 
 class ProductForm(Form):
     """The main input form for ringup."""
@@ -42,6 +43,3 @@ class ProductForm(Form):
             )
         self.inputs['dummy'].grid(row=0, column=0)
         specsinfo.grid(row=1, column=0, sticky='we')
-
-
-
