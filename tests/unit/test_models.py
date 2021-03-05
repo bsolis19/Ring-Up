@@ -60,7 +60,7 @@ def id_costformula_idata_func(fixture_value):
 @pytest.fixture()
 def a_product():
     """Return something simple."""
-    return Product("Glass", 30, "small sheet")
+    return Product("Glass", 30, "small sheet", 0.11, 0.02 )
 
 
 @pytest.fixture()
@@ -125,8 +125,10 @@ class TestProduct:
         assert p.title == "Glass"
         assert p.cost == 30
         assert p.description == "small sheet"
+        assert p.fixedcost == 0.11
+        assert p.waste == 0.02
 
-        p_with_new_attr = Product(p.title, p.cost, p.description, size="48x96")
+        p_with_new_attr = Product(p.title, p.cost, size="48x96")
         assert p_with_new_attr.size == "48x96"
 
     def test_member_mutate(self, a_product):
@@ -134,23 +136,27 @@ class TestProduct:
         NEW_TITLE = "Foo"
         NEW_COST = 5
         NEW_DESCRIPTION = "foo description"
+        NEW_FIXEDCOST = 0.33
+        NEW_WASTE = 0.07
 
         p = a_product
-        assert (p.title, p.cost, p.description) !=\
-            (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
+        assert (p.title, p.cost, p.description, p.fixedcost, p.waste) !=\
+            (NEW_TITLE, NEW_COST, NEW_DESCRIPTION, NEW_FIXEDCOST, NEW_WASTE)
 
         p.title = NEW_TITLE
         p.cost = NEW_COST
         p.description = NEW_DESCRIPTION
+        p.fixedcost = NEW_FIXEDCOST
+        p.waste = NEW_WASTE
 
-        assert (p.title, p.cost, p.description) ==\
-            (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
+        assert (p.title, p.cost, p.description, p.fixedcost, p.waste) ==\
+            (NEW_TITLE, NEW_COST, NEW_DESCRIPTION, NEW_FIXEDCOST, NEW_WASTE)
 
     def test_defaults(self, a_product):
         """Using no optional parameters should invoke defaults."""
         p = a_product
         p1 = Product(p.title, p.cost)
-        p2 = Product(p.title, p.cost, "")
+        p2 = Product(p.title, p.cost, "", 0, 0.0)
         assert p1 == p2
 
     def test_cost_as_CostFormula(self, a_product, a_costformula):
@@ -160,6 +166,16 @@ class TestProduct:
         p.cost = a_costformula
 
         assert p.cost == 6
+
+    def test_price_property(self, a_product):
+        """price should return calculated sell price with default margin of 75%"""
+        p = a_product
+        assert p.cost == 30
+        assert p.fixedcost == 0.11
+        assert p.waste == 0.02
+
+        expected = (30 * (1 + 0.02) + 0.11) / (1 - 0.75)
+        assert p.price == expected
 
     def test_new_product_raises_TypeError(self, invalid_type_product_data):
         """Product() should raise an exception with invalid param."""

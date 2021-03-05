@@ -13,10 +13,20 @@ CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 
 @logged
 class Product:
-    def __init__(self, title, cost, description='', **extras):
+    def __init__(
+            self,
+            title,
+            cost,
+            description='',
+            fixedcost=0,
+            waste=0.0,
+            **extras
+            ):
         self.title = title
         self.cost = cost
         self.description = description
+        self.fixedcost = fixedcost
+        self.waste = waste
         self.__dict__.update(extras)
 
     @property
@@ -42,6 +52,29 @@ class Product:
     def cost(self, value):
         self._validate_cost(value)
         self._cost = value
+
+    @property
+    def fixedcost(self):
+        return self._fixedcost
+
+    @fixedcost.setter
+    def fixedcost(self, value):
+        self._validate_cost(value)
+        self._fixedcost = value
+
+    @property
+    def waste(self):
+        return self._waste
+
+    @waste.setter
+    def waste(self, value):
+        if (value > .15):
+            raise ValueError("Waste cannot be more than 15%")
+        self._waste = float(abs(value))
+
+    @property
+    def price(self, margin=.75):
+        return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
 
     def _validate_cost(self, cost):
         if (cost < 0):
