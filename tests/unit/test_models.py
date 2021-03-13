@@ -197,6 +197,8 @@ class TestAddon:
         assert a.cost == round(a_product.cost + 3.49, 2)
         assert a.description == a_product.description + " " + \
             a_product.title + " " + "2-inch Bevel Finish"
+        assert a.fixedcost == a_product.fixedcost
+        assert a.waste == a_product.waste
 
         a_with_new_attr = Addon(
                 a_product,
@@ -231,6 +233,16 @@ class TestAddon:
 
         assert (a.addontitle, a.addoncost, a.addondescription) == \
             (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
+
+
+    def test_price_property(self, an_addon):
+        """price should return calculated sell price with default margin of 75%"""
+        a = an_addon
+        p_cost = a.product.cost
+        p_waste = a.product.waste
+        p_fixedcost = a.product.fixedcost
+        assert a.price == ((p_cost + 3.49) * (1 + p_waste) + p_fixedcost) / (1 - 0.75)
+
 
     def test_new_addon_raises_TypeError(self, a_product,
                                         invalid_type_product_data):
