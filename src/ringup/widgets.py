@@ -3,6 +3,26 @@
 import tkinter as tk
 from tkinter import ttk
 
+from ringup.lib.observables import ObserverMixin
+
+class PriceOutput(tk.Label, ObserverMixin):
+
+    def __init__(self, parent, model, margin, *args, **kwargs):
+        super().__init__(parent, text='label', *args, **kwargs)
+        self.model = model
+        self.margin = margin
+
+    @property
+    def margin(self):
+        return float(self._margin.get())
+
+    @margin.setter
+    def margin(self, value):
+        self._margin = value
+
+    def update(self):
+        self.text = str(self.model.price(self.margin))
+
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""

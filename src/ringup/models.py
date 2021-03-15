@@ -25,6 +25,7 @@ class Product(ObservableMixin):
             waste=0.0,
             **extras
             ):
+        super().__init__()
         self.title = title
         self.cost = cost
         self.description = description

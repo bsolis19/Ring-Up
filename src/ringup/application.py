@@ -46,7 +46,7 @@ class Application(tk.Tk):
                 self.settings,
                 self.callbacks,
             )
-        self.productform.grid(row=1, padx=10, sticky='NSEW')
+        self.productform.pack()
 
     def save_settings(self, *args):
         """Save current settings to file."""
