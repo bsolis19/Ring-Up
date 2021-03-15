@@ -3,7 +3,7 @@
 import re
 import ringup.lib.formula as fi
 
-
+from ringup.lib.observables import ObservableMixin
 from ringup.lib.log import logged
 
 from collections import namedtuple
@@ -12,7 +12,7 @@ CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 
 
 @logged
-class Product:
+class Product(ObservableMixin):
     def __init__(
             self,
             title,
@@ -61,6 +61,7 @@ class Product:
     def fixedcost(self, value):
         self._validate_cost(value)
         self._fixedcost = value
+        self.changed()
 
     @property
     def waste(self):
@@ -71,6 +72,7 @@ class Product:
         if (value > .15):
             raise ValueError("Waste cannot be more than 15%")
         self._waste = float(abs(value))
+        self.changed()
 
     @property
     def price(self, margin=.75):
