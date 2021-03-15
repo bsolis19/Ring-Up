@@ -127,6 +127,22 @@ class Addon(Product):
         self._cost = round(value + self.product.cost, 2)
 
     @property
+    def fixedcost(self):
+        return self.product.fixedcost
+
+    @fixedcost.setter
+    def fixedcost(self, value):
+        pass
+
+    @property
+    def waste(self):
+        return self.product.waste
+
+    @waste.setter
+    def waste(self, value):
+        pass
+
+    @property
     def description(self):
         return self._description
 
