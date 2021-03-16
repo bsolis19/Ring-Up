@@ -20,29 +20,29 @@ class ProductForm(Form):
     def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
         super().__init__(parent, model, settings, callbacks, *args, **kwargs)
 
-        self.current_product = None
+        self.model = model
+        self.header_var = tk.StringVar(value=self.model.title)
 
         # build the form
-        self.product_label = ttk.Label(self, text="PRODUCT")
-        # self.product_label.grid(row=0, column=0)
+        self.header = ttk.Label(self, textvariable=self.header_var)
+        self.header.pack()
 
         # product specifications section
         specsinfo = tk.LabelFrame(
                 self,
-                text='Product Specifications',
-                bg='khaki',
+                text='Product Details',
                 padx=10,
                 pady=10,
             )
 
-        self.inputs['dummy'] = w.LabelInput(
+        self.inputs['title'] = w.LabelInput(
                 specsinfo,
-                'Dummy',
+                'Title:',
                 field_spec=None,
                 label_args=None,
             )
         # self.inputs['dummy'].grid(row=0, column=0)
-        self.inputs['dummy'].pack()
+        self.inputs['title'].pack()
         # specsinfo.grid(row=1, column=0, sticky='we')
         specsinfo.pack()
 

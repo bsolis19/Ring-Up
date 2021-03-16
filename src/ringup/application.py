@@ -18,7 +18,7 @@ class Application(tk.Tk):
         self.geometry('%sx%s' % (s.WINDOW_WIDTH, s.WINDOW_HEIGHT))
 
         # data model
-        self.data_model = m.Product('', 0.00)
+        self.data_model = m.Product('Dozen Roses', 29.99)
 
         # settings model & settings
         config_dir = s.CONFIG_DIR or '~'
