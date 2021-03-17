@@ -39,6 +39,10 @@ class Application(tk.Tk):
         menu = menu_class(self, self.settings, self.callbacks)
         self.config(menu=menu)
 
+        # templates
+        _ = tk.Frame(self, width=200, height=400, background='black')
+        _.pack(side=tk.LEFT, fill=tk.Y)
+
         # product data form
         self.productform = v.ProductForm(
                 self,
@@ -46,7 +50,7 @@ class Application(tk.Tk):
                 self.settings,
                 self.callbacks,
             )
-        self.productform.pack()
+        self.productform.pack(side=tk.TOP, fill=tk.Y)
 
     def save_settings(self, *args):
         """Save current settings to file."""

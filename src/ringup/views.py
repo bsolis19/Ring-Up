@@ -20,48 +20,66 @@ class ProductForm(Form):
     def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
         super().__init__(parent, model, settings, callbacks, *args, **kwargs)
 
+        # Data
         self.model = model
         self.header_var = tk.StringVar(value=self.model.title)
 
-        # build the form
-        self.header = ttk.Label(self, textvariable=self.header_var)
-        self.header.pack()
-
-        # product specifications section
-        specsinfo = tk.LabelFrame(
+        # Containers
+        header_container = tk.Frame(self)
+        layout = tk.Frame(
                 self,
-                text='Product Details',
                 padx=10,
                 pady=10,
             )
 
+        # Header
+        header = ttk.Label(
+                header_container,
+                textvariable=self.header_var,
+                font=("Calibri", 24),
+            )
+        header.pack()
+        header_container.pack()
+
+        # Entries
         self.inputs['title'] = w.LabelInput(
-                specsinfo,
+                layout,
                 'Title:',
-                field_spec=None,
-                label_args=None,
+                input_args={
+                    },
             )
-        # self.inputs['dummy'].grid(row=0, column=0)
-        self.inputs['title'].pack()
-        # specsinfo.grid(row=1, column=0, sticky='we')
-        specsinfo.pack()
+        self.inputs['title'].grid(columnspan=3)
+        # self.inputs['title'].columnconfigure(1, weight=3)
 
-        costinfo = tk.LabelFrame(
-                self,
-                text="Cost",
-                bg='red',
-                padx=10,
-                pady=10,
+        self.inputs['cost'] = w.LabelInput(
+                layout,
+                'Cost:',
+                input_args={'width': 6},
             )
+        self.inputs['cost'].grid(row=1, column=0)
+        self.inputs['fixedcost'] = w.LabelInput(
+                layout,
+                'Fixed Cost:',
+                input_args={'width': 5},
+            )
+        self.inputs['fixedcost'].grid(row=1, column=1)
+        self.inputs['waste'] = w.LabelInput(
+                layout,
+                'Waste %:',
+                input_args={'width': 3},
+            )
+        self.inputs['waste'].grid(row=1, column=2)
         self.inputs['margin'] = w.LabelInput(
-                costinfo,
-                'Margin',
-                field_spec=None,
-                label_args=None,
+                layout,
+                'Margin %:',
+                input_args={'width': 3},
             )
+        self.inputs['margin'].grid(row=2, column=2)
 
         # price output
         self._build_price_output()
+
+        layout.pack()
 
     def _build_price_output(self):
         container = tk.Frame(self)
