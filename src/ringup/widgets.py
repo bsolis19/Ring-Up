@@ -40,16 +40,15 @@ class LabelInput(tk.Frame):
             ):
         super().__init__(parent, **kwargs)
         input_args = input_args or {}
-        label_args = label_args or {'font': DEFAULT_FONT}
-        self.variable = input_var
-
-        self.label = ttk.Label(self, text=label, **label_args)
-        self.label.grid(row=0, column=0)
         input_args["textvariable"] = input_var
+        label_args = label_args or {'font': DEFAULT_FONT}
+
+        self.variable = input_var
+        self.label = ttk.Label(self, text=label, **label_args)
         self.input_ = input_class(self, **input_args)
 
-        self.input_.grid(row=0, column=1)
-        # self.rowconfigure(0, weight=1)
+        self.label.grid(row=0, column=0)
+        self.input_.grid(row=0, column=1, sticky=tk.W+tk.E)
 
     # Create default behavior for grid invocation
     def grid(self, sticky=(tk.W + tk.E), **kwargs):
