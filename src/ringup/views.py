@@ -62,13 +62,13 @@ class ProductForm(Form):
         self.inputs['fixedcost'].grid(row=1, column=1)
         self.inputs['waste'] = w.LabelInput(
                 layout,
-                'Waste %:',
+                'Waste :',
                 input_args={'width': 3},
             )
         self.inputs['waste'].grid(row=1, column=2)
         self.inputs['margin'] = w.LabelInput(
                 layout,
-                'Margin %:',
+                'Margin :',
                 input_args={'width': 3},
             )
         self.inputs['margin'].grid(row=2, column=2)
