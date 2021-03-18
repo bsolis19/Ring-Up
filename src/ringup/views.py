@@ -73,14 +73,24 @@ class ProductForm(Form):
         self.inputs['margin'].grid(row=2, column=2)
 
         # price output
-        self._build_price_output()
+        output_component = self._build_price_output(layout)
+        output_component.grid(row=3, column=2)
 
         layout.pack()
 
-    def _build_price_output(self):
-        container = tk.Frame(self)
-        self.price_label = tk.Label(container, text='Sell Price:')
-        self.price_label.grid(row=0, column=0)
-        self.output = w.PriceOutput(container, self.model, self.inputs['margin'].variable)
-        self.output.grid(row=0, column=1)
-        container.pack(side=tk.BOTTOM, fill=tk.X)
+    def _build_price_output(self, parent):
+        container = tk.Frame(parent)
+        label = tk.Label(
+                container,
+                text='Sell Price',
+                font=('Calibri', 20),
+                )
+        label.grid(row=0, column=0)
+        self.output = w.PriceOutput(
+                container,
+                self.model,
+                self.inputs['margin'].variable,
+                label_args={'font': ('Calibri', 24)},
+                )
+        self.output.grid(row=1, column=0)
+        return container

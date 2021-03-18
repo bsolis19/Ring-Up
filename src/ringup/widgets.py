@@ -7,8 +7,8 @@ from ringup.lib.observables import ObserverMixin
 DEFAULT_FONT = ("Calibri", 18)
 
 class PriceOutput(tk.Label, ObserverMixin):
-    def __init__(self, parent, model, margin, *args, **kwargs):
-        super().__init__(parent, text='label', *args, **kwargs)
+    def __init__(self, parent, model, margin, label='0.00', label_args=None):
+        super().__init__(parent, text=label, **label_args)
         self.model = model
         self.margin = margin
 
