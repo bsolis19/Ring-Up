@@ -46,7 +46,7 @@ class ProductForm(Form):
                 'Title:',
             )
         self.inputs['title'].grid(columnspan=3)
-
+        self.inputs['title'].columnconfigure(1, weight=1)
         self.inputs['cost'] = w.LabelInput(
                 layout,
                 'Cost:',
@@ -75,7 +75,6 @@ class ProductForm(Form):
         # price output
         self._build_price_output()
 
-        self.inputs['title'].columnconfigure(1, weight=1)
         layout.pack()
 
     def _build_price_output(self):
