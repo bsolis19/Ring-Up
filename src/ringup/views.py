@@ -1,7 +1,6 @@
 """Views for ringup project."""
 
 import tkinter as tk
-from tkinter import ttk
 
 from . import widgets as w
 
@@ -33,7 +32,7 @@ class ProductForm(Form):
             )
 
         # Header
-        header = ttk.Label(
+        header = tk.Label(
                 header_container,
                 textvariable=self.header_var,
                 font=("Calibri", 24),
@@ -81,7 +80,7 @@ class ProductForm(Form):
 
     def _build_price_output(self):
         container = tk.Frame(self)
-        self.price_label = ttk.Label(container, text='Sell Price:')
+        self.price_label = tk.Label(container, text='Sell Price:')
         self.price_label.grid(row=0, column=0)
         self.output = w.PriceOutput(container, self.model, self.inputs['margin'].variable)
         self.output.grid(row=0, column=1)

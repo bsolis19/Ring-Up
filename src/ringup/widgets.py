@@ -1,7 +1,6 @@
 """Widgets for ringup GUI."""
 
 import tkinter as tk
-from tkinter import ttk
 
 from ringup.lib.observables import ObserverMixin
 
@@ -32,7 +31,7 @@ class LabelInput(tk.Frame):
             self,
             parent,
             label='',
-            input_class=ttk.Entry,
+            input_class=tk.Entry,
             input_var=None,
             input_args=None,
             label_args=None,
@@ -44,7 +43,7 @@ class LabelInput(tk.Frame):
         label_args = label_args or {'font': DEFAULT_FONT}
 
         self.variable = input_var
-        self.label = ttk.Label(self, text=label, **label_args)
+        self.label = tk.Label(self, text=label, **label_args)
         self.input_ = input_class(self, **input_args)
 
         self.label.grid(row=0, column=0)
@@ -73,7 +72,7 @@ class LabelInput(tk.Frame):
             self.variable.set(bool(value))
         elif self.variable:
             self.variable.set(value, *args, **kwargs)
-        elif type(self.input_) in (ttk.Checkbutton, ttk.Radiobutton):
+        elif type(self.input_) in (tk.Checkbutton, tk.Radiobutton):
             if value:
                 self.input_.select()
             else:
