@@ -76,13 +76,14 @@ class ProductForm(Form):
 
         # tabbed sections
         tabs = self._build_tabbed_component(layout)
-        tabs.grid(columnspan=2, rowspan=2)
+        tabs.grid(columnspan=2, rowspan=3)
         tabs.grid(row=2, column=0)
 
         # price output
         output_component = self._build_price_output(layout)
         output_component.grid(row=3, column=2)
 
+        layout.rowconfigure(3, weight=1)
         layout.pack()
 
     def _build_tabbed_component(self, parent):
@@ -96,15 +97,22 @@ class ProductForm(Form):
                 text='Addons',
             )
         component.add(
-                self._build_details_frame(component),
+                self._build_description_frame(component),
                 text='Description',
             )
         return component
 
     def _build_details_frame(self, parent):
         container = tk.Frame(parent, background='red')
+        lb = tk.Listbox(container, background='blue')
+        lb.pack()
         return container
 
+    def _build_description_frame(self, parent):
+        container = tk.Frame(parent, background='red')
+        textbox = tk.Text(container, background='blue', height=30, width=30)
+        textbox.pack()
+        return container
 
     def _build_price_output(self, parent):
         container = tk.Frame(parent)
