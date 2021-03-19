@@ -110,7 +110,8 @@ class ProductForm(Form):
 
     def _build_description_frame(self, parent):
         container = tk.Frame(parent, background='red')
-        textbox = tk.Text(container, background='blue', height=30, width=30)
+        container.pack_propagate(False)
+        textbox = tk.Text(container, background='blue')
         textbox.pack()
         return container
 
