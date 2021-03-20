@@ -93,7 +93,7 @@ class ProductForm(Form):
                 text='Details',
             )
         component.add(
-                self._build_details_frame(component),
+                self._build_addons_frame(component),
                 text='Addons',
             )
         component.add(
@@ -104,8 +104,11 @@ class ProductForm(Form):
 
     def _build_details_frame(self, parent):
         container = tk.Frame(parent, background='red')
-        lb = tk.Listbox(container, background='blue')
-        lb.pack()
+        self._build_details_table(container)
+        return container
+
+    def _build_addons_frame(self, parent):
+        container = tk.Frame(parent, background='red')
         return container
 
     def _build_description_frame(self, parent):
@@ -131,3 +134,34 @@ class ProductForm(Form):
                 )
         self.output.grid(row=1, column=0)
         return container
+
+    def _build_details_table(self, parent):
+       # table header
+       headers = self._make_widget_pair(parent, tk.Label, 'Attribute Name', 'Value')
+       headers.pack(fill=tk.X)
+
+       # table content
+
+    def _make_widget_pair(self, parent, class_=tk.Label, val1=None, val2=None):
+        container = tk.Frame(parent)
+        if class_ == tk.Label:
+            w1 = tk.Label(container, text=val1)
+            w2 = tk.Label(container, text=val2)
+        elif class_ == tk.Entry:
+            w1 = tk.Entry(container)
+            w2 = tk.Entry(container)
+            w1.insert(0, val1)
+            w2.insert(0, val2)
+        else:
+            raise ValueError('Invalid widget class for a pair')
+
+        w1.grid(row=0, column=0)
+        w2.grid(row=0, column=1)
+        container.columnconfigure(0, weight=1)
+        container.columnconfigure(1, weight=1)
+
+        return container
+
+
+
+
