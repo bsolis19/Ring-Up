@@ -6,6 +6,7 @@ from tkinter import ttk
 
 from . import widgets as w
 
+
 class Form(tk.Frame):
 
     def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
@@ -94,7 +95,7 @@ class ProductForm(Form):
                 text='Details',
             )
         component.add(
-                self._build_details_frame(component),
+                self._build_addons_frame(component),
                 text='Addons',
             )
         component.add(
@@ -105,8 +106,12 @@ class ProductForm(Form):
 
     def _build_details_frame(self, parent):
         container = tk.Frame(parent, background='red')
-        table_component = self._build_entries_table(container)
+        table_component = self._build_details_table(container)
         table_component.pack(fill=tk.X)
+        return container
+
+    def _build_addons_frame(self, parent):
+        container = tk.Frame(parent, background='red')
         return container
 
     def _build_description_frame(self, parent):
@@ -116,7 +121,7 @@ class ProductForm(Form):
         textbox.pack()
         return container
 
-    def _build_entries_table(self, parent):
+    def _build_details_table(self, parent):
         container = tk.Frame(parent)
         header1, header2 = self._build_pair(container, 'Detail', 'Value')
         header1.grid()
@@ -155,7 +160,7 @@ class ProductForm(Form):
             w2.insert(0, txt2)
         else:
             raise ValueError('Widget pair could not be created')
-        return w1,w2
+        return w1, w2
 
     def load_details(self, container):
         details = self._get_details()
@@ -192,4 +197,3 @@ class ProductForm(Form):
         empty1, empty2 = self._build_pair(parent=parent, class_=tk.Entry)
         empty1.grid(row=row, column=0)
         empty2.grid(row=row, column=1)
-
