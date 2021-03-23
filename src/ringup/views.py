@@ -25,6 +25,7 @@ class ProductForm(Form):
         # Data
         self.model = model
         self.model.details = {'color': 'red', 'foo': 'bar'}
+        self.model.addons = ('clear vase', 'chocolate')
         self.header_var = tk.StringVar(value=self.model.title)
 
         # Containers
@@ -105,13 +106,19 @@ class ProductForm(Form):
         return component
 
     def _build_details_frame(self, parent):
-        container = tk.Frame(parent, background='red')
+        container = tk.Frame(parent)
         table_component = self._build_details_table(container)
         table_component.pack(fill=tk.X)
         return container
 
     def _build_addons_frame(self, parent):
-        container = tk.Frame(parent, background='red')
+        container = tk.Frame(parent)
+        group_container = tk.Listbox(container, font=('Calibri', 16))
+        self.load_addons(group_container)
+        group_container.pack()
+        btns_container = tk.Frame(container)
+        self._append_control_buttons(btns_container)
+        btns_container.pack(side=tk.BOTTOM)
         return container
 
     def _build_description_frame(self, parent):
@@ -197,3 +204,25 @@ class ProductForm(Form):
         empty1, empty2 = self._build_pair(parent=parent, class_=tk.Entry)
         empty1.grid(row=row, column=0)
         empty2.grid(row=row, column=1)
+
+    def load_addons(self, parent):
+        addons = self._get_addons()
+        self._display_addons(parent, addons)
+
+    def _get_addons(self):
+        return self.model.addons
+
+    def _display_addons(self, parent, addons):
+        i = 0
+        for addon in addons:
+            parent.insert(i, str(addon))
+            i += 1
+
+    def _append_control_buttons(self, parent):
+        edit_btn = tk.Button(parent, text='Edit')
+        add_btn = tk.Button(parent, text='Add')
+        delete_btn = tk.Button(parent, text='Delete')
+
+        edit_btn.pack(side=tk.LEFT)
+        add_btn.pack(side=tk.LEFT)
+        delete_btn.pack(side=tk.LEFT)
