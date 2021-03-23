@@ -24,7 +24,6 @@ class ProductForm(Form):
 
         # Data
         self.model = model
-        self.model.details = {'color': 'red', 'foo': 'bar'}
         self.model.addons = ('clear vase', 'chocolate')
         self.header_var = tk.StringVar(value=self.model.title)
 
@@ -174,7 +173,7 @@ class ProductForm(Form):
         self._display_details(container, details)
 
     def _get_details(self):
-        return self.model.details
+        return self.model.custom_attributes
 
     def _display_details(self, parent, details):
         # row 0 used by header text
