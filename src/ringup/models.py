@@ -15,7 +15,7 @@ CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 class Product(ObservableMixin):
     def __init__(
             self,
-            title,
+            name,
             cost,
             description='',
             fixedcost=0,
@@ -23,7 +23,7 @@ class Product(ObservableMixin):
             **extras
             ):
         super().__init__()
-        self.title = title
+        self.name = name
         self.cost = cost
         self.description = description
         self.fixedcost = fixedcost
@@ -35,13 +35,13 @@ class Product(ObservableMixin):
         return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
 
     @property
-    def title(self):
-        return self._title
+    def name(self):
+        return self._name
 
-    @title.setter
-    def title(self, value):
+    @name.setter
+    def name(self, value):
         try:
-            self._title = value.title()
+            self._name = value.title()
         except AttributeError:
             raise TypeError
 
@@ -98,7 +98,7 @@ class Product(ObservableMixin):
             raise ValueError("Expected nonnegative cost")
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def __repr__(self):
         return "{__class__.__name__}({_args_str})".format(
@@ -125,13 +125,13 @@ class Addon(Product):
         super().__init__(*args, **extras)
 
     @property
-    def title(self):
-        return self._title
+    def name(self):
+        return self._name
 
-    @title.setter
-    def title(self, value):
-        self.addontitle = value
-        self._title = self.product.title + " +" + value
+    @name.setter
+    def name(self, value):
+        self.addonname = value
+        self._name = self.product.name + " +" + value
 
     @property
     def cost(self):
@@ -166,7 +166,7 @@ class Addon(Product):
     @description.setter
     def description(self, value):
         self._description = self.product.description +\
-            " " + self.product.title + " " + value + " " + self.addontitle
+            " " + self.product.name + " " + value + " " + self.addonname
         self.addondescription = value
 
 
