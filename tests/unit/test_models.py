@@ -129,7 +129,7 @@ class TestProduct:
         assert p.waste == 0.02
 
         p_with_new_attr = Product(p.title, p.cost, size="48x96")
-        assert p_with_new_attr.size == "48x96"
+        assert p_with_new_attr.get_custom_attribute('size') == "48x96"
 
     def test_member_mutate(self, a_product):
         """Check .field = value functionality of Product."""
@@ -207,7 +207,7 @@ class TestAddon:
                 a.addondescription,
                 bevel_size=2,
             )
-        assert a_with_new_attr.bevel_size == 2
+        assert a_with_new_attr.get_custom_attribute('bevel_size') == 2
 
     def test_defaults(self, an_addon):
         """Using no optional parameters should invoke defaults."""
@@ -235,7 +235,7 @@ class TestAddon:
             (NEW_TITLE, NEW_COST, NEW_DESCRIPTION)
 
 
-    def test_price_property(self, an_addon):
+    def test_price_property_default_margin(self, an_addon):
         """price should return calculated sell price with default margin of 75%"""
         a = an_addon
         p_cost = a.product.cost
@@ -243,6 +243,13 @@ class TestAddon:
         p_fixedcost = a.product.fixedcost
         assert a.price == ((p_cost + 3.49) * (1 + p_waste) + p_fixedcost) / (1 - 0.75)
 
+    def test_calculate_price(self, an_addon):
+        """calculate_price() should return calculated sell price using margin arg"""
+        a = an_addon
+        p_cost = a.product.cost
+        p_waste = a.product.waste
+        p_fixedcost = a.product.fixedcost
+        assert a.calculate_price(.60) == ((p_cost + 3.49) * (1 + p_waste) + p_fixedcost) / (1 - 0.60)
 
     def test_new_addon_raises_TypeError(self, a_product,
                                         invalid_type_product_data):
