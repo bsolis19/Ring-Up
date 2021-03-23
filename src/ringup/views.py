@@ -122,9 +122,9 @@ class ProductForm(Form):
         return container
 
     def _build_description_frame(self, parent):
-        container = tk.Frame(parent, background='red')
+        container = tk.Frame(parent)
         container.pack_propagate(False)
-        textbox = tk.Text(container, background='blue')
+        textbox = tk.Text(container)
         textbox.pack()
         return container
 
