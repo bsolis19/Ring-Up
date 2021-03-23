@@ -31,7 +31,11 @@ class Product(ObservableMixin):
         self.description = description
         self.fixedcost = fixedcost
         self.waste = waste
-        self.__dict__.update(extras)
+
+        self._custom_attributes = dict(**extras)
+
+    def calculate_price(self, margin=.75):
+        return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
 
     @property
     def title(self):
@@ -79,8 +83,14 @@ class Product(ObservableMixin):
         self.changed()
 
     @property
-    def price(self, margin=.75):
-        return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
+    def custom_attributes(self):
+        return self._custom_attributes
+
+    def set_custom_attribute(self, name, value):
+        self._custom_attributes[name] = value
+
+    def get_custom_attribute(self, name):
+        return self._custom_attributes[name]
 
     def _validate_cost(self, cost):
         if (cost < 0):
@@ -103,6 +113,8 @@ class Product(ObservableMixin):
         return vars(self) == vars(other)
 
     __hash__ = None
+
+    price = property(calculate_price)
 
 
 @logged
