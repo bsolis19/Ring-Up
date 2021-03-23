@@ -22,6 +22,7 @@ class Product(ObservableMixin):
             waste=0.0,
             **extras
             ):
+        super().__init__()
         self.title = title
         self.cost = cost
         self.description = description
@@ -77,6 +78,10 @@ class Product(ObservableMixin):
     @property
     def price(self, margin=.75):
         return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
+
+    @property
+    def details(self):
+        return  list(filter(lambda x: not x.startswith('_') and x != 'description' and x !='product', vars(self)))
 
     def _validate_cost(self, cost):
         if (cost < 0):
