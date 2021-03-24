@@ -15,7 +15,7 @@ CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
 class Product(ObservableMixin):
     def __init__(
             self,
-            id_,
+            sku,
             name,
             cost,
             description='',
@@ -24,7 +24,7 @@ class Product(ObservableMixin):
             **extras
             ):
         super().__init__()
-        self.id = id_
+        self.sku = sku
         self.name = name
         self.cost = cost
         self.description = description
