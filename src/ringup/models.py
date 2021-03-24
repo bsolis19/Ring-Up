@@ -6,10 +6,6 @@ import ringup.lib.formula as fi
 from ringup.lib.observables import ObservableMixin
 from ringup.lib.log import logged
 
-from collections import namedtuple
-
-CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
-
 
 @logged
 class Product(ObservableMixin):
@@ -31,11 +27,37 @@ class Product(ObservableMixin):
         self.fixedcost = fixedcost
         self.waste = waste
 
+        self._addons = dict()
         self._custom_attributes = dict(**extras)
 
     def calculate_price(self, margin=.75):
         return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
 
+    @property
+    def addons(self):
+        return self._addons
+
+    def get_addon(self, sku):
+        return self._addons[sku]
+
+    def register_addon(self, addon):
+       self._addons[addon.sku] = addon
+
+    def remove_addon(self, sku):
+        del self._addons[sku]
+
+    @property
+    def sku(self):
+        return self._sku
+
+    @sku.setter
+    def sku(self, value):
+        if not value:
+            raise ValueError('SKU cannot be empty')
+        if value and isinstance(value, str):
+            self._sku = value
+        else:
+            raise TypeError('SKU must be a string')
 
     @property
     def name(self):
@@ -122,17 +144,26 @@ class Addon(Product):
     def __init__(self, product, *args, **extras):
         self.product = product
         super().__init__(*args, **extras)
+        self.register_addon(self)
 
     @property
-    def name(self):
-        return self._name
+    def addons(self):
+        return self.product.addons
 
-    @name.setter
-    def name(self, value):
-        self.addonname = value
-        self._name = self.product.name + " +" + value
+    def get_addon(self, sku):
+        if self.sku == sku:
+            return self
+        return self.product.get_addon(sku)
 
-    @property
+    def register_addon(self, addon):
+       self.product.register_addon(addon)
+
+    def remove_addon(self, sku):
+        if self.product.sku == sku:
+            self.product = self.product.product
+        self.product.remove_addon(sku)
+
+   @property
     def cost(self):
         return self._cost
 
@@ -167,6 +198,12 @@ class Addon(Product):
         self._description = self.product.description +\
             " " + self.product.name + " " + value + " " + self.addonname
         self.addondescription = value
+
+    def set_addon(self, addon):
+        self.product.set_addon(addon)
+
+    def get_addon(self, sku):
+        self.product.get_addon(name)
 
 
 @logged
