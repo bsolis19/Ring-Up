@@ -92,10 +92,6 @@ class Product(ObservableMixin):
     def get_custom_attribute(self, name):
         return self._custom_attributes[name]
 
-    @property
-    def details(self):
-        return  list(filter(lambda x: not x.startswith('_') and x != 'description' and x !='product', vars(self)))
-
     def _validate_cost(self, cost):
         if (cost < 0):
             raise ValueError("Expected nonnegative cost")
