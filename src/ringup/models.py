@@ -8,42 +8,75 @@ import ringup.lib.formula as fi
 from ringup.lib.observables import ObservableMixin
 from ringup.lib.log import logged
 
-from collections import namedtuple
-
-CustomAttribute = namedtuple('CustomAttribute', ['name', 'value'])
-
 
 @logged
 class Product(ObservableMixin):
     def __init__(
             self,
-            title,
+            sku,
+            name,
             cost,
             description='',
-            fixedcost=0,
+            fixed_cost=0,
             waste=0.0,
             **extras
             ):
         super().__init__()
-        self.title = title
+        self.sku = sku
+        self.name = name
         self.cost = cost
         self.description = description
-        self.fixedcost = fixedcost
+        self.fixed_cost = fixed_cost
         self.waste = waste
 
+        self._addons = dict()
         self._custom_attributes = dict(**extras)
 
     def calculate_price(self, margin=.75):
-        return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
+        return (self.total_cost) / (1 - margin)
 
     @property
-    def title(self):
-        return self._title
+    def total_cost(self):
+        return self.calculated_cost + self.fixed_cost
 
-    @title.setter
-    def title(self, value):
+    @property
+    def calculated_cost(self):
+        return self.cost * (1 + self.waste)
+
+    @property
+    def addons(self):
+        return self._addons
+
+    def get_addon(self, sku):
+        assert self._addons.get(sku, None) == None
+
+    def _register_addon(self, addon):
+       self._addons[addon.sku] = addon
+
+    def remove_addon(self, sku):
+        del self._addons[sku]
+
+    @property
+    def sku(self):
+        return self._sku
+
+    @sku.setter
+    def sku(self, value):
+        if not value:
+            raise ValueError('SKU cannot be empty')
+        if value and isinstance(value, str):
+            self._sku = value
+        else:
+            raise TypeError('SKU must be a string')
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
         try:
-            self._title = value.title()
+            self._name = value.title()
         except AttributeError:
             raise TypeError
 
@@ -61,13 +94,13 @@ class Product(ObservableMixin):
         self._cost = value
 
     @property
-    def fixedcost(self):
-        return self._fixedcost
+    def fixed_cost(self):
+        return self._fixed_cost
 
-    @fixedcost.setter
-    def fixedcost(self, value):
+    @fixed_cost.setter
+    def fixed_cost(self, value):
         self._validate_cost(value)
-        self._fixedcost = value
+        self._fixed_cost = value
         self.changed()
 
     @property
@@ -76,10 +109,13 @@ class Product(ObservableMixin):
 
     @waste.setter
     def waste(self, value):
-        if (value > .15):
-            raise ValueError("Waste cannot be more than 15%")
+        self._validate_waste(value)
         self._waste = float(abs(value))
         self.changed()
+
+    def _validate_waste(self, waste):
+        if (waste > .15):
+            raise ValueError("Waste cannot be more than 15%")
 
     @property
     def custom_attributes(self):
@@ -96,7 +132,7 @@ class Product(ObservableMixin):
             raise ValueError("Expected nonnegative cost")
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def __repr__(self):
         return "{__class__.__name__}({_args_str})".format(
@@ -121,51 +157,44 @@ class Addon(Product):
     def __init__(self, product, *args, **extras):
         self.product = product
         super().__init__(*args, **extras)
+        self._register_addon(self)
 
     @property
-    def title(self):
-        return self._title
+    def addons(self):
+        return self.product.addons
 
-    @title.setter
-    def title(self, value):
-        self.addontitle = value
-        self._title = self.product.title + " +" + value
+    def get_addon(self, sku):
+        if self.sku == sku:
+            return self
+        return self.product.get_addon(sku)
 
-    @property
-    def cost(self):
-        return self._cost
+    def _register_addon(self, addon):
+       self.product._register_addon(addon)
 
-    @cost.setter
-    def cost(self, value):
-        self._validate_cost(value)
-        self.addoncost = value
-        self._cost = round(value + self.product.cost, 2)
-
-    @property
-    def fixedcost(self):
-        return self.product.fixedcost
-
-    @fixedcost.setter
-    def fixedcost(self, value):
-        pass
+    def remove_addon(self, sku):
+        self.product.remove_addon(sku)
+        if self.product.sku == sku:
+            self.product = self.product.product
+        elif self.sku == sku:
+            raise ValueError("Cannot remove head object from chain of references")
 
     @property
-    def waste(self):
-        return self.product.waste
-
-    @waste.setter
-    def waste(self, value):
-        pass
+    def calculated_cost(self):
+        return super().calculated_cost + self.product.calculated_cost
 
     @property
-    def description(self):
-        return self._description
+    def total_cost(self):
+        return self.calculated_cost + self.product.fixed_cost
 
-    @description.setter
-    def description(self, value):
-        self._description = self.product.description +\
-            " " + self.product.title + " " + value + " " + self.addontitle
-        self.addondescription = value
+    @property
+    def fixed_cost(self):
+        return self.product.fixed_cost
+
+    @fixed_cost.setter
+    def fixed_cost(self, value):
+        if value != 0:
+            raise ValueError("Addon.fixed_cost must be zero")
+        self._fixed_cost = value
 
 class SettingsModel:
     """A model for saving settings"""
