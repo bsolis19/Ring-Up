@@ -15,7 +15,7 @@ class Product(ObservableMixin):
             name,
             cost,
             description='',
-            fixedcost=0,
+            fixed_cost=0,
             waste=0.0,
             **extras
             ):
@@ -24,23 +24,31 @@ class Product(ObservableMixin):
         self.name = name
         self.cost = cost
         self.description = description
-        self.fixedcost = fixedcost
+        self.fixed_cost = fixed_cost
         self.waste = waste
 
         self._addons = dict()
         self._custom_attributes = dict(**extras)
 
     def calculate_price(self, margin=.75):
-        return (self.cost * (1 + self.waste) + self.fixedcost) / (1 - margin)
+        return (self.total_cost) / (1 - margin)
+
+    @property
+    def total_cost(self):
+        return self.calculated_cost + self.fixed_cost
+
+    @property
+    def calculated_cost(self):
+        return self.cost * (1 + self.waste)
 
     @property
     def addons(self):
         return self._addons
 
     def get_addon(self, sku):
-        return self._addons[sku]
+        assert self._addons.get(sku, None) == None
 
-    def register_addon(self, addon):
+    def _register_addon(self, addon):
        self._addons[addon.sku] = addon
 
     def remove_addon(self, sku):
@@ -84,13 +92,13 @@ class Product(ObservableMixin):
         self._cost = value
 
     @property
-    def fixedcost(self):
-        return self._fixedcost
+    def fixed_cost(self):
+        return self._fixed_cost
 
-    @fixedcost.setter
-    def fixedcost(self, value):
+    @fixed_cost.setter
+    def fixed_cost(self, value):
         self._validate_cost(value)
-        self._fixedcost = value
+        self._fixed_cost = value
         self.changed()
 
     @property
@@ -99,10 +107,13 @@ class Product(ObservableMixin):
 
     @waste.setter
     def waste(self, value):
-        if (value > .15):
-            raise ValueError("Waste cannot be more than 15%")
+        self._validate_waste(value)
         self._waste = float(abs(value))
         self.changed()
+
+    def _validate_waste(self, waste):
+        if (waste > .15):
+            raise ValueError("Waste cannot be more than 15%")
 
     @property
     def custom_attributes(self):
@@ -144,7 +155,7 @@ class Addon(Product):
     def __init__(self, product, *args, **extras):
         self.product = product
         super().__init__(*args, **extras)
-        self.register_addon(self)
+        self._register_addon(self)
 
     @property
     def addons(self):
@@ -155,55 +166,33 @@ class Addon(Product):
             return self
         return self.product.get_addon(sku)
 
-    def register_addon(self, addon):
-       self.product.register_addon(addon)
+    def _register_addon(self, addon):
+       self.product._register_addon(addon)
 
     def remove_addon(self, sku):
+        self.product.remove_addon(sku)
         if self.product.sku == sku:
             self.product = self.product.product
-        self.product.remove_addon(sku)
-
-   @property
-    def cost(self):
-        return self._cost
-
-    @cost.setter
-    def cost(self, value):
-        self._validate_cost(value)
-        self.addoncost = value
-        self._cost = round(value + self.product.cost, 2)
+        elif self.sku == sku:
+            raise ValueError("Cannot remove head object from chain of references")
 
     @property
-    def fixedcost(self):
-        return self.product.fixedcost
-
-    @fixedcost.setter
-    def fixedcost(self, value):
-        pass
+    def calculated_cost(self):
+        return super().calculated_cost + self.product.calculated_cost
 
     @property
-    def waste(self):
-        return self.product.waste
-
-    @waste.setter
-    def waste(self, value):
-        pass
+    def total_cost(self):
+        return self.calculated_cost + self.product.fixed_cost
 
     @property
-    def description(self):
-        return self._description
+    def fixed_cost(self):
+        return self.product.fixed_cost
 
-    @description.setter
-    def description(self, value):
-        self._description = self.product.description +\
-            " " + self.product.name + " " + value + " " + self.addonname
-        self.addondescription = value
-
-    def set_addon(self, addon):
-        self.product.set_addon(addon)
-
-    def get_addon(self, sku):
-        self.product.get_addon(name)
+    @fixed_cost.setter
+    def fixed_cost(self, value):
+        if value != 0:
+            raise ValueError("Addon.fixed_cost must be zero")
+        self._fixed_cost = value
 
 
 @logged
