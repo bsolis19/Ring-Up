@@ -48,7 +48,7 @@ class Product(ObservableMixin):
         return self._addons
 
     def get_addon(self, id_):
-        assert self._addons.get(id_, None) == None
+        return self.addons.get(id_, None)
 
     def _register_addon(self, addon):
        self._addons[addon.id_] = addon
@@ -145,7 +145,7 @@ class Product(ObservableMixin):
                 )
 
     def __eq__(self, other):
-        return vars(self) == vars(other)
+        return self.id_ == other.id_
 
     __hash__ = None
 

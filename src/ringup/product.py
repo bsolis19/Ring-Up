@@ -1,19 +1,60 @@
 import uuid
 
-from .builder import ProductBuilder
+from . import models as m
+
+DEFAULT_MARGIN = .75
+
+
+class ProductBuilder:
+    @staticmethod
+    def build_blank_product():
+        return m.Product('0', '0', '', 0)
+
+    @staticmethod
+    def build_product(*args, **kwargs):
+        return m.Product(*args, **kwargs)
+
+    @staticmethod
+    def build_addon(*args, **kwargs):
+        return m.Addon(*args, **kwargs)
+
 
 class Driver:
     """Core processor of product data"""
-    product_builder = ProductBuilder()
+
+    product_builder = ProductBuilder
+    blank_product = ProductBuilder.build_blank_product()
+
+    def __init__(self):
+        self.product = Driver.blank_product
+        self.complete_product = self.product
 
     def create_product(self, sku, name, cost, **extras):
-        self.product = Driver.product_builder.build_product(self._gen_id(), sku, name, cost, **extras)
+        self.product = Driver.product_builder\
+                .build_product(
+                        self._gen_id(),
+                        sku,
+                        name,
+                        cost,
+                        **extras
+                        )
         self.complete_product = self.product
         return self
 
     def create_addon(self, sku, name, cost, **extras):
-        self.complete_product = Driver.product_builder.build_addon(self.product, self._gen_id(), sku, name, cost, **extras)
+        self.complete_product = Driver.product_builder\
+                .build_addon(
+                        self.product,
+                        self._gen_id(),
+                        sku,
+                        name,
+                        cost,
+                        **extras
+                        )
         return self
+
+    def get_product(self):
+        return self.complete_product
 
     def calculate_price(self, margin=DEFAULT_MARGIN):
         return self.complete_product.calculate_price(margin)
@@ -21,19 +62,20 @@ class Driver:
     def get_addons(self):
         return self.product.addons
 
-    def get_addon(self, id_):
-        return self.product.addons.get(id_, None)
+    def get_addon(self, id_=''):
+        if id_:
+            return self.product.get_addon(id_)
+        else:
+            return self.complete_product
 
     def remove_addon(self, id_):
         if self.product.addons.get(id_, None) is None:
             return
 
-        if self.complete_product.id_ is id_
+        if self.complete_product.id_ is id_:
             self.complete_product = self.complete_product.product
 
         self.complete_product.remove_addon(id_)
 
     def _gen_id(self):
         return str(uuid.uuid4())
-
-
