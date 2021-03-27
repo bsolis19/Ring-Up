@@ -23,10 +23,9 @@ class Driver:
     """Core processor of product data"""
 
     product_builder = ProductBuilder
-    blank_product = ProductBuilder.build_blank_product()
 
     def __init__(self):
-        self.product = Driver.blank_product
+        self.product = Driver.product_builder.build_blank_product()
         self.complete_product = self.product
 
     def create_product(self, sku, name, cost, **extras):
@@ -65,17 +64,19 @@ class Driver:
     def get_addon(self, id_=''):
         if id_:
             return self.product.get_addon(id_)
-        else:
+        if len(self.complete_product.addons) != 0:
             return self.complete_product
+
 
     def remove_addon(self, id_):
         if self.product.addons.get(id_, None) is None:
-            return
+            return self
 
         if self.complete_product.id_ is id_:
             self.complete_product = self.complete_product.product
 
         self.complete_product.remove_addon(id_)
+        return self
 
     def _gen_id(self):
         return str(uuid.uuid4())

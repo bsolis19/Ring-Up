@@ -21,7 +21,7 @@ class Product(ObservableMixin):
             **extras
             ):
         super().__init__()
-        self.id_ = id_
+        self.id_ = str(id_)
         self.sku = sku
         self.name = name
         self.cost = cost
@@ -145,7 +145,7 @@ class Product(ObservableMixin):
                 )
 
     def __eq__(self, other):
-        return self.id_ == other.id_
+        return dir(self) == dir(self)
 
     __hash__ = None
 
