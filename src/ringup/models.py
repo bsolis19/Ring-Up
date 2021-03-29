@@ -13,6 +13,7 @@ from ringup.lib.log import logged
 class Product(ObservableMixin):
     def __init__(
             self,
+            id_,
             sku,
             name,
             cost,
@@ -22,6 +23,7 @@ class Product(ObservableMixin):
             **extras
             ):
         super().__init__()
+        self.id_ = str(id_)
         self.sku = sku
         self.name = name
         self.cost = cost
@@ -47,14 +49,14 @@ class Product(ObservableMixin):
     def addons(self):
         return self._addons
 
-    def get_addon(self, sku):
-        assert self._addons.get(sku, None) == None
+    def get_addon(self, id_):
+        return self.addons.get(id_, None)
 
     def _register_addon(self, addon):
-       self._addons[addon.sku] = addon
+       self._addons[addon.id_] = addon
 
-    def remove_addon(self, sku):
-        del self._addons[sku]
+    def remove_addon(self, id_):
+        del self._addons[id_]
 
     @property
     def sku(self):
@@ -145,7 +147,7 @@ class Product(ObservableMixin):
                 )
 
     def __eq__(self, other):
-        return vars(self) == vars(other)
+        return dir(self) == dir(self)
 
     __hash__ = None
 
@@ -163,19 +165,19 @@ class Addon(Product):
     def addons(self):
         return self.product.addons
 
-    def get_addon(self, sku):
-        if self.sku == sku:
+    def get_addon(self, id_):
+        if self.id_ == id_:
             return self
-        return self.product.get_addon(sku)
+        return self.product.get_addon(id_)
 
     def _register_addon(self, addon):
        self.product._register_addon(addon)
 
-    def remove_addon(self, sku):
-        self.product.remove_addon(sku)
-        if self.product.sku == sku:
+    def remove_addon(self, id_):
+        self.product.remove_addon(id_)
+        if self.product.id_ == id_:
             self.product = self.product.product
-        elif self.sku == sku:
+        elif self.id_ == id_:
             raise ValueError("Cannot remove head object from chain of references")
 
     @property
