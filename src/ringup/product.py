@@ -19,17 +19,17 @@ class ProductBuilder:
         return m.Addon(*args, **kwargs)
 
 
-class Driver:
-    """Core processor of product data"""
+class ProductManager:
+    """Manager of product data"""
 
     product_builder = ProductBuilder
 
     def __init__(self):
-        self.product = Driver.product_builder.build_blank_product()
+        self.product = ProductManager.product_builder.build_blank_product()
         self.complete_product = self.product
 
     def create_product(self, sku, name, cost, **extras):
-        self.product = Driver.product_builder\
+        self.product = ProductManager.product_builder\
                 .build_product(
                         self._gen_id(),
                         sku,
@@ -41,7 +41,7 @@ class Driver:
         return self
 
     def create_addon(self, sku, name, cost, **extras):
-        self.complete_product = Driver.product_builder\
+        self.complete_product = ProductManager.product_builder\
                 .build_addon(
                         self.product,
                         self._gen_id(),
