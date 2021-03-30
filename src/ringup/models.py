@@ -5,13 +5,15 @@ import json
 import re
 
 import ringup.lib.formula as fi
+import tkinter as tk
 
-from ringup.lib.observables import ObservableMixin
+from collections import OrderedDict
+from ringup.lib.observables import ObservableMixin, ObserverMixin
 from ringup.lib.log import logged
 
 
 @logged
-class Product(ObservableMixin):
+class Product(ObservableMixin, ObserverMixin):
     def __init__(
             self,
             id_,
@@ -32,14 +34,19 @@ class Product(ObservableMixin):
         self.fixed_cost = fixed_cost
         self.waste = waste
 
-        self._addons = dict()
+        self._addons = OrderedDict()
         self._custom_attributes = dict(**extras)
+
+    def update(self):
+        self._changed()
 
     def calculate_price(self, margin=.75):
         return (self.total_cost) / (1 - margin)
 
     @property
     def total_cost(self):
+        if len(self.addons) < 0:
+            return list(self.addons.values())[-1].total_cost()
         return self.calculated_cost + self.fixed_cost
 
     @property
@@ -55,9 +62,12 @@ class Product(ObservableMixin):
 
     def _register_addon(self, addon):
        self._addons[addon.id_] = addon
+       self._changed()
+       addon.registerObserver(self)
 
     def remove_addon(self, id_):
         del self._addons[id_]
+        self._changed()
 
     @property
     def sku(self):
@@ -95,6 +105,7 @@ class Product(ObservableMixin):
     def cost(self, value):
         self._validate_cost(value)
         self._cost = value
+        self._changed()
 
     @property
     def fixed_cost(self):
@@ -104,7 +115,7 @@ class Product(ObservableMixin):
     def fixed_cost(self, value):
         self._validate_cost(value)
         self._fixed_cost = value
-        self.changed()
+        self._changed()
 
     @property
     def waste(self):
@@ -114,7 +125,7 @@ class Product(ObservableMixin):
     def waste(self, value):
         self._validate_waste(value)
         self._waste = float(abs(value))
-        self.changed()
+        self._changed()
 
     def _validate_waste(self, waste):
         if (waste > .15):
@@ -126,6 +137,7 @@ class Product(ObservableMixin):
 
     def set_custom_attribute(self, name, value):
         self._custom_attributes[name] = value
+        self._changed()
 
     def get_custom_attribute(self, name):
         return self._custom_attributes[name]
@@ -198,6 +210,10 @@ class Addon(Product):
         if value != 0:
             raise ValueError("Addon.fixed_cost must be zero")
         self._fixed_cost = value
+
+    # override inherited method
+    def update(self):
+        pass
 
 class SettingsModel:
     """A model for saving settings"""

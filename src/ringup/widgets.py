@@ -12,6 +12,8 @@ class PriceOutput(tk.Label, ObserverMixin):
         self.model = model
         self.margin = margin
 
+        self.model.registerObserver(self)
+
     @property
     def margin(self):
         return float(self._margin.get())
@@ -20,8 +22,8 @@ class PriceOutput(tk.Label, ObserverMixin):
     def margin(self, value):
         self._margin = value
 
-    def update(self):
-        self.text = str(self.model.price(self.margin))
+    def load(self):
+        self.text = str(self.model.calculate_price(self.margin))
 
 
 class LabelInput(tk.Frame):

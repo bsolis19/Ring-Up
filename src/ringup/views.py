@@ -24,8 +24,7 @@ class ProductForm(Form):
 
         # Data
         self.model = model
-        self.model.addons = ('clear vase', 'chocolate')
-        self.header_var = tk.StringVar(value=self.model.title)
+        self.header_var = tk.StringVar(value=self.model.name)
 
         # Containers
         header_container = tk.Frame(self)
@@ -72,6 +71,7 @@ class ProductForm(Form):
         self.inputs['margin'] = w.LabelInput(
                 layout,
                 'Margin :',
+                input_var=tk.DoubleVar(),
                 input_args={'width': 3},
             )
         self.inputs['margin'].grid(row=2, column=2)

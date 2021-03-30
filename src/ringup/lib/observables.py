@@ -3,7 +3,7 @@ class ObservableMixin:
     def __init__(self):
         self._observers = list()
 
-    def changed(self):
+    def _changed(self):
         self.notifyObservers()
 
     def registerObserver(self, observer):
