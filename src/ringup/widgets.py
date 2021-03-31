@@ -23,8 +23,7 @@ class PriceOutput(tk.Label, ObserverMixin):
         self._margin = value
 
     def load(self):
-        self.text = str(self.model.calculate_price(self.margin))
-
+        self.config(text=str(self.model.calculate_price(float(self.margin))))
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""

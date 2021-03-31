@@ -244,7 +244,7 @@ class ProductForm(Form):
             except ValueError:
                 # TODO set error message
                 pass
-        print('model cost is {}'.format(self.model.cost))
+        #print('model cost is {}'.format(self.model.cost))
 
     def _set_model_fixed_cost(self, *args):
         if self._is_changed('fixed_cost'):
@@ -253,7 +253,7 @@ class ProductForm(Form):
             except ValueError:
                 # TODO set error message
                 pass
-        print('model fixed_cost is {}'.format(self.model.fixed_cost))
+        #print('model fixed_cost is {}'.format(self.model.fixed_cost))
 
     def _set_model_waste(self, *args):
         if self._is_changed('waste'):
@@ -262,7 +262,7 @@ class ProductForm(Form):
             except ValueError:
                 # TODO set error message
                 pass
-        print('model waste is {}'.format(self.model.waste))
+        #print('model waste is {}'.format(self.model.waste))
 
     def _is_changed(self, field):
         current_value = getattr(self.model, field)

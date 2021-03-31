@@ -37,7 +37,7 @@ class Product(ObservableMixin, ObserverMixin):
         self._addons = OrderedDict()
         self._custom_attributes = dict(**extras)
 
-    def update(self):
+    def update_(self):
         self._changed()
 
     def calculate_price(self, margin=.75):

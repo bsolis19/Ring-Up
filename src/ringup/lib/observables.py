@@ -14,8 +14,8 @@ class ObservableMixin:
 
     def notifyObservers(self):
         for observer in self._observers:
-            observer.update()
+            observer.update_()
 
 class ObserverMixin:
-    def update(self):
+    def update_(self):
         self.load()
