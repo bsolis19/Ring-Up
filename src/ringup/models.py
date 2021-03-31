@@ -41,7 +41,7 @@ class Product(ObservableMixin, ObserverMixin):
         self._changed()
 
     def calculate_price(self, margin=.75):
-        return (self.total_cost) / (1 - margin)
+        return round((self.total_cost) / (1 - margin), 2)
 
     @property
     def total_cost(self):
@@ -212,7 +212,7 @@ class Addon(Product):
         self._fixed_cost = value
 
     # override inherited method
-    def update(self):
+    def update_(self):
         pass
 
 class SettingsModel:

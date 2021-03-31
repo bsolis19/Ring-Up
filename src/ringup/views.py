@@ -50,6 +50,7 @@ class ProductForm(Form):
             )
         self.inputs['name'].grid(columnspan=3)
         self.inputs['name'].columnconfigure(1, weight=1)
+        self.inputs['name'].set(self.model.name)
 
         self.inputs['cost'] = w.LabelInput(
                 layout,
