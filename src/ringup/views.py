@@ -44,12 +44,12 @@ class ProductForm(Form):
         header_container.pack()
 
         # Entries
-        self.inputs['title'] = w.LabelInput(
+        self.inputs['name'] = w.LabelInput(
                 layout,
-                'Title:',
+                'Name:',
             )
-        self.inputs['title'].grid(columnspan=3)
-        self.inputs['title'].columnconfigure(1, weight=1)
+        self.inputs['name'].grid(columnspan=3)
+        self.inputs['name'].columnconfigure(1, weight=1)
         self.inputs['cost'] = w.LabelInput(
                 layout,
                 'Cost:',
