@@ -97,6 +97,7 @@ class ProductForm(Form):
                 input_args={'width': 3},
             )
         self.inputs['margin'].grid(row=2, column=2)
+        self.inputs['margin'].input_.bind('<FocusOut>', self._reload_price)
 
         # tabbed sections
         tabs = self._build_tabbed_component(layout)
@@ -168,13 +169,13 @@ class ProductForm(Form):
                 font=('Calibri', 20),
                 )
         label.grid(row=0, column=0)
-        self.output = w.PriceOutput(
+        self.price_output = w.PriceOutput(
                 container,
                 self.model,
                 self.inputs['margin'].variable,
                 label_args={'font': ('Calibri', 24)},
                 )
-        self.output.grid(row=1, column=0)
+        self.price_output.grid(row=1, column=0)
         return container
 
     def _build_pair(self, parent, txt1='', txt2='', class_=tk.Label):
@@ -274,6 +275,9 @@ class ProductForm(Form):
                 # TODO set error message
                 pass
         #print('model waste is {}'.format(self.model.waste))
+
+    def _reload_price(self, *args):
+        self.price_output.load()
 
     def _is_changed(self, field):
         current_value = getattr(self.model, field)
