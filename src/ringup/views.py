@@ -50,24 +50,35 @@ class ProductForm(Form):
             )
         self.inputs['name'].grid(columnspan=3)
         self.inputs['name'].columnconfigure(1, weight=1)
+
         self.inputs['cost'] = w.LabelInput(
                 layout,
                 'Cost:',
                 input_args={'width': 6},
             )
         self.inputs['cost'].grid(row=1, column=0)
-        self.inputs['fixedcost'] = w.LabelInput(
+        self.inputs['cost'].set(self.model.cost)
+        self.inputs['cost'].input_.bind('<FocusOut>', self._set_model_cost)
+
+        self.inputs['fixed_cost'] = w.LabelInput(
                 layout,
                 'Fixed Cost:',
                 input_args={'width': 5},
             )
-        self.inputs['fixedcost'].grid(row=1, column=1)
+        self.inputs['fixed_cost'].grid(row=1, column=1)
+        self.inputs['fixed_cost'].set(self.model.fixed_cost)
+        self.inputs['fixed_cost'].input_\
+            .bind('<FocusOut>', self._set_model_fixed_cost)
+
         self.inputs['waste'] = w.LabelInput(
                 layout,
                 'Waste :',
                 input_args={'width': 3},
             )
         self.inputs['waste'].grid(row=1, column=2)
+        self.inputs['waste'].set(self.model.waste)
+        self.inputs['waste'].input_.bind('<FocusOut>', self._set_model_waste)
+
         self.inputs['margin'] = w.LabelInput(
                 layout,
                 'Margin :',
@@ -225,3 +236,39 @@ class ProductForm(Form):
         edit_btn.pack(side=tk.LEFT)
         add_btn.pack(side=tk.LEFT)
         delete_btn.pack(side=tk.LEFT)
+
+    def _set_model_cost(self, *args):
+        if self._is_changed('cost'):
+            try:
+                self.model.cost = float(self.inputs['cost'].get())
+            except ValueError:
+                # TODO set error message
+                pass
+        print('model cost is {}'.format(self.model.cost))
+
+    def _set_model_fixed_cost(self, *args):
+        if self._is_changed('fixed_cost'):
+            try:
+                self.model.fixed_cost = float(self.inputs['fixed_cost'].get())
+            except ValueError:
+                # TODO set error message
+                pass
+        print('model fixed_cost is {}'.format(self.model.fixed_cost))
+
+    def _set_model_waste(self, *args):
+        if self._is_changed('waste'):
+            try:
+                self.model.waste = float(self.inputs['waste'].get())
+            except ValueError:
+                # TODO set error message
+                pass
+        print('model waste is {}'.format(self.model.waste))
+
+    def _is_changed(self, field):
+        current_value = getattr(self.model, field)
+        type_ = type(current_value)
+        try:
+            new_value = type_(self.inputs[field].get())
+            return current_value != new_value
+        except ValueError:
+            return True
