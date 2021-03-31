@@ -44,11 +44,21 @@ class ProductForm(Form):
         header_container.pack()
 
         # Entries
+        self.inputs['sku'] = w.LabelInput(
+                layout,
+                'SKU:',
+                input_args={'width': 12},
+            )
+        self.inputs['sku'].grid()
+        # self.inputs['sku'].columnconfigure(1, weight=1)
+        self.inputs['sku'].set(self.model.sku)
+
+
         self.inputs['name'] = w.LabelInput(
                 layout,
                 'Name:',
             )
-        self.inputs['name'].grid(columnspan=3)
+        self.inputs['name'].grid(row=1, column=0, columnspan=3)
         self.inputs['name'].columnconfigure(1, weight=1)
         self.inputs['name'].set(self.model.name)
 
@@ -57,7 +67,7 @@ class ProductForm(Form):
                 'Cost:',
                 input_args={'width': 6},
             )
-        self.inputs['cost'].grid(row=1, column=0)
+        self.inputs['cost'].grid(row=2, column=0)
         self.inputs['cost'].set(self.model.cost)
         self.inputs['cost'].input_.bind('<FocusOut>', self._set_model_cost)
 
@@ -66,7 +76,7 @@ class ProductForm(Form):
                 'Fixed Cost:',
                 input_args={'width': 5},
             )
-        self.inputs['fixed_cost'].grid(row=1, column=1)
+        self.inputs['fixed_cost'].grid(row=2, column=1)
         self.inputs['fixed_cost'].set(self.model.fixed_cost)
         self.inputs['fixed_cost'].input_\
             .bind('<FocusOut>', self._set_model_fixed_cost)
@@ -76,7 +86,7 @@ class ProductForm(Form):
                 'Waste :',
                 input_args={'width': 3},
             )
-        self.inputs['waste'].grid(row=1, column=2)
+        self.inputs['waste'].grid(row=2, column=2)
         self.inputs['waste'].set(self.model.waste)
         self.inputs['waste'].input_.bind('<FocusOut>', self._set_model_waste)
 
@@ -91,7 +101,7 @@ class ProductForm(Form):
         # tabbed sections
         tabs = self._build_tabbed_component(layout)
         tabs.grid(columnspan=2, rowspan=3)
-        tabs.grid(row=2, column=0)
+        tabs.grid(row=3, column=0)
 
         # price output
         output_component = self._build_price_output(layout)
