@@ -270,9 +270,13 @@ class ProductForm(Form):
             i += 1
 
     def _build_control_buttons(self, parent):
-        edit_btn = tk.Button(parent, text='Edit')
-        add_btn = tk.Button(parent, text='Add')
-        delete_btn = tk.Button(parent, text='Delete')
+        edit_btn = tk.Button(parent, command=self._edit_addon_cmd, text='Edit')
+        add_btn = tk.Button(parent, command=self._add_addon_cmd, text='Add')
+        delete_btn = tk.Button(
+                parent,
+                command=self._delete_addon_cmd,
+                text='Delete',
+            )
 
         edit_btn.pack(side=tk.LEFT)
         add_btn.pack(side=tk.LEFT)
@@ -314,3 +318,16 @@ class ProductForm(Form):
             return current_value != new_value
         except ValueError:
             return True
+
+    def _add_addon_cmd(self):
+        print('addon clicked')
+        self._open_add_addon_window()
+
+    def _edit_addon_cmd(self):
+        print('edit clicked')
+
+    def _delete_addon_cmd(self):
+        print('delete clicked')
+
+    def _open_add_addon_window(self):
+        new_window = tk.Toplevel(self.winfo_toplevel())
