@@ -139,7 +139,7 @@ class ProductForm(Form):
         self.load_addons(group_container)
         group_container.pack()
         btns_container = tk.Frame(container)
-        self._append_control_buttons(btns_container)
+        self._build_control_buttons(btns_container)
         btns_container.pack(side=tk.BOTTOM)
         return container
 
@@ -240,7 +240,7 @@ class ProductForm(Form):
             parent.insert(i, str(addon))
             i += 1
 
-    def _append_control_buttons(self, parent):
+    def _build_control_buttons(self, parent):
         edit_btn = tk.Button(parent, text='Edit')
         add_btn = tk.Button(parent, text='Add')
         delete_btn = tk.Button(parent, text='Delete')
