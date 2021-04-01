@@ -6,14 +6,32 @@ from ringup.lib.observables import ObserverMixin
 
 DEFAULT_FONT = ("Calibri", 18)
 
-class PriceOutput(tk.Label, ObserverMixin):
-    def __init__(self, parent, model, margin, label_args=None):
+
+class LabelObserverOutput(tk.Label, ObserverMixin):
+    def __init__(self, parent, model, output_data, label_args=None):
         super().__init__(parent, **label_args)
         self.model = model
-        self.margin = margin
-
         self.model.registerObserver(self)
+        self.get_output_data = output_data
+
+    def load(self):
+        # self.config(text=str(self.model.calculate_price(self.margin)))
+        self.config(text=str(self.get_output_data(*self.output_args)))
+
+    @property
+    def output_args(self):
+        return tuple()
+
+
+class MoneyOutput(LabelObserverOutput):
+    def __init__(self, parent, model, amount, margin, label_args=None):
+        super().__init__(parent, model, amount, label_args)
+        self.margin = margin
         self.load()
+
+    @property
+    def output_args(self):
+        return tuple([self.margin])
 
     @property
     def margin(self):
@@ -23,8 +41,28 @@ class PriceOutput(tk.Label, ObserverMixin):
     def margin(self, value):
         self._margin = value
 
-    def load(self):
-        self.config(text=str(self.model.calculate_price(self.margin)))
+
+class ProfitOutput(MoneyOutput):
+    def __init__(self, parent, model, margin, label_args=None):
+        super().__init__(
+                parent,
+                model,
+                model.calculate_profit,
+                margin,
+                label_args
+            )
+
+
+class PriceOutput(MoneyOutput):
+    def __init__(self, parent, model, margin, label_args=None):
+        super().__init__(
+                parent,
+                model,
+                model.calculate_price,
+                margin,
+                label_args
+             )
+
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""

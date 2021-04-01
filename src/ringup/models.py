@@ -43,6 +43,9 @@ class Product(ObservableMixin, ObserverMixin):
     def calculate_price(self, margin=.75):
         return round((self.total_cost) / (1 - margin), 2)
 
+    def calculate_profit(self, margin=.75):
+        return round((self.calculate_price(margin) * margin), 2)
+
     @property
     def total_cost(self):
         if len(self.addons) < 0:

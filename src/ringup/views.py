@@ -9,6 +9,9 @@ from . import widgets as w
 
 class Form(tk.Frame):
 
+    PROFIT_COLOR = "#118C4F"
+    FOCUS_COLOR = "#1D3F6E"
+
     def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.model = model
@@ -53,7 +56,6 @@ class ProductForm(Form):
         # self.inputs['sku'].columnconfigure(1, weight=1)
         self.inputs['sku'].set(self.model.sku)
 
-
         self.inputs['name'] = w.LabelInput(
                 layout,
                 'Name:',
@@ -97,18 +99,20 @@ class ProductForm(Form):
                 input_args={'width': 3},
             )
         self.inputs['margin'].grid(row=2, column=2)
-        self.inputs['margin'].input_.bind('<FocusOut>', self._reload_price)
+        self.inputs['margin'].input_.bind('<FocusOut>', self._reload_output)
 
         # tabbed sections
         tabs = self._build_tabbed_component(layout)
         tabs.grid(columnspan=2, rowspan=3)
         tabs.grid(row=3, column=0)
 
-        # price output
-        output_component = self._build_price_output(layout)
-        output_component.grid(row=3, column=2)
+        # output
+        profit_output_component = self._build_profit_output(layout)
+        profit_output_component.grid(row=3, column=2)
+        price_output_component = self._build_price_output(layout)
+        price_output_component.grid(row=4, column=2)
 
-        layout.rowconfigure(3, weight=1)
+        layout.rowconfigure(5, weight=1)
         layout.pack()
 
     def _build_tabbed_component(self, parent):
@@ -166,6 +170,7 @@ class ProductForm(Form):
         label = tk.Label(
                 container,
                 text='Sell Price',
+                fg=self.FOCUS_COLOR,
                 font=('Calibri', 20),
                 )
         label.grid(row=0, column=0)
@@ -173,9 +178,33 @@ class ProductForm(Form):
                 container,
                 self.model,
                 self.inputs['margin'].variable,
-                label_args={'font': ('Calibri', 24)},
+                label_args={
+                    'font': ('Calibri', 24),
+                    'fg': self.FOCUS_COLOR,
+                    },
                 )
         self.price_output.grid(row=1, column=0)
+        return container
+
+    def _build_profit_output(self, parent):
+        container = tk.Frame(parent)
+        label = tk.Label(
+                container,
+                text='Profit',
+                fg=self.PROFIT_COLOR,
+                font=('Calibri', 20),
+                )
+        label.grid(row=0, column=0)
+        self.profit_output = w.ProfitOutput(
+                container,
+                self.model,
+                self.inputs['margin'].variable,
+                label_args={
+                    'font': ('Calibri', 24),
+                    'fg': self.PROFIT_COLOR,
+                    },
+                )
+        self.profit_output.grid(row=1, column=0)
         return container
 
     def _build_pair(self, parent, txt1='', txt2='', class_=tk.Label):
@@ -256,7 +285,6 @@ class ProductForm(Form):
             except ValueError:
                 # TODO set error message
                 pass
-        #print('model cost is {}'.format(self.model.cost))
 
     def _set_model_fixed_cost(self, *args):
         if self._is_changed('fixed_cost'):
@@ -265,7 +293,6 @@ class ProductForm(Form):
             except ValueError:
                 # TODO set error message
                 pass
-        #print('model fixed_cost is {}'.format(self.model.fixed_cost))
 
     def _set_model_waste(self, *args):
         if self._is_changed('waste'):
@@ -274,9 +301,9 @@ class ProductForm(Form):
             except ValueError:
                 # TODO set error message
                 pass
-        #print('model waste is {}'.format(self.model.waste))
 
-    def _reload_price(self, *args):
+    def _reload_output(self, *args):
+        self.profit_output.load()
         self.price_output.load()
 
     def _is_changed(self, field):
