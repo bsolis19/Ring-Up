@@ -26,11 +26,22 @@ class Form(tk.Frame):
                 pady=10,
             )
 
-    def _build_tabbed_component(self, parent, tabs):
+    def _build_control_buttons(self, parent, *cmds):
+        for cmd in cmds:
+            tk.Button(
+                    parent,
+                    command=getattr(self, "_{}_cmd".format(cmd)),
+                    text=cmd.split('_')[0].title(),
+                ).pack(side=tk.LEFT)
+
+    def _build_tabbed_component(self, parent, *tabs):
         component = ttk.Notebook(parent)
         for tab in tabs:
             component.add(
-                getattr(self, "_build_{}_frame".format(tab))(component),
+                getattr(
+                    self,
+                    "_build_{}_frame".format(tab.lower())
+                    )(component),
                 text=tab.title(),
             )
         return component
@@ -141,6 +152,16 @@ class Form(tk.Frame):
         except ValueError:
             return True
 
+    def _build_popup(self):
+        return tk.Toplevel(self.winfo_toplevel())
+
+    def _cancel_cmd(self):
+        self._close_window()
+
+    def _close_window(self):
+        self.winfo_toplevel().destroy()
+
+
 class ProductForm(Form):
     """The main input form for ringup."""
     def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
@@ -218,7 +239,12 @@ class ProductForm(Form):
         self.inputs['margin'].input_.bind('<FocusOut>', self._reload_output)
 
         # tabbed sections
-        tabs = self._build_tabbed_component(layout, ('details', 'addons', 'description'))
+        tabs = self._build_tabbed_component(
+                layout,
+                'details',
+                'addons',
+                'description',
+            )
         tabs.grid(columnspan=2, rowspan=3)
         tabs.grid(row=3, column=0)
 
@@ -237,7 +263,12 @@ class ProductForm(Form):
         self.load_addons(group_container)
         group_container.pack()
         btns_container = tk.Frame(container)
-        self._build_control_buttons(btns_container)
+        self._build_control_buttons(
+                btns_container,
+                'add_addon',
+                'edit_addon',
+                'delete_addon',
+            )
         btns_container.pack(side=tk.BOTTOM)
         return container
 
@@ -283,7 +314,6 @@ class ProductForm(Form):
         self.profit_output.grid(row=1, column=0)
         return container
 
-
     def load_addons(self, parent):
         addons = self._get_addons()
         self._display_addons(parent, addons)
@@ -296,19 +326,6 @@ class ProductForm(Form):
         for addon in addons:
             parent.insert(i, str(addon))
             i += 1
-
-    def _build_control_buttons(self, parent):
-        edit_btn = tk.Button(parent, command=self._edit_addon_cmd, text='Edit')
-        add_btn = tk.Button(parent, command=self._add_addon_cmd, text='Add')
-        delete_btn = tk.Button(
-                parent,
-                command=self._delete_addon_cmd,
-                text='Delete',
-            )
-
-        edit_btn.pack(side=tk.LEFT)
-        add_btn.pack(side=tk.LEFT)
-        delete_btn.pack(side=tk.LEFT)
 
     def _reload_output(self, *args):
         self.profit_output.load()
@@ -325,18 +342,29 @@ class ProductForm(Form):
         print('delete clicked')
 
     def _open_add_addon_window(self):
-        new_window = tk.Toplevel(self.winfo_toplevel())
+        new_window = self._build_popup()
         AddonForm(new_window, self.model, 'new', None, None).pack()
 
 
 class AddonForm(Form):
     """The addon input form for ringup."""
-    def __init__(self, parent, model, cmd_type, settings, callbacks, *args, **kwargs):
+    def __init__(
+            self,
+            parent,
+            model,
+            cmd_type,
+            settings,
+            callbacks,
+            *args,
+            **kwargs):
         super().__init__(parent, model, settings, callbacks, *args, **kwargs)
-        parent.title('{} Addon for {}'.format(cmd_type.title(),self.model.name))
+        parent.title(
+                '{} Addon for {}'.format(cmd_type.title(), self.model.name)
+             )
 
         # Containers
         header_container = tk.Frame(self)
+        btns_container = tk.Frame(self)
         layout = self._build_layout()
 
         # Header
@@ -383,8 +411,16 @@ class AddonForm(Form):
         self.inputs['waste'].set(self.model.waste)
 
         # tabbed sections
-        tabs = self._build_tabbed_component(layout, ('details', 'description'))
+        tabs = self._build_tabbed_component(layout, 'details', 'description')
         tabs.grid(columnspan=2, rowspan=3)
         tabs.grid(row=3, column=0)
 
+        # control buttons
+        self._build_control_buttons(btns_container, 'cancel', 'apply_addon')
+
         layout.pack()
+        btns_container.pack(anchor=tk.E)
+
+    def _apply_addon_cmd(self):
+        print('Addon Applied')
+        self._close_window()
