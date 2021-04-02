@@ -336,7 +336,17 @@ class AddonForm(Form):
         parent.title('{} Addon for {}'.format(cmd_type.title(),self.model.name))
 
         # Containers
+        header_container = tk.Frame(self)
         layout = self._build_layout()
+
+        # Header
+        header = tk.Label(
+                header_container,
+                text="New Addon",
+                font=("Calibri", 24),
+            )
+        header.pack()
+        header_container.pack()
 
         # Entries
         self.inputs['sku'] = w.LabelInput(
