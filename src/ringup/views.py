@@ -55,69 +55,9 @@ class Form(tk.Frame):
 
     def _build_details_frame(self, parent):
         container = tk.Frame(parent)
-        table_component = self._build_details_table(container)
+        table_component = w.EntryPairTable(container)
         table_component.pack(fill=tk.X)
         return container
-
-    def _build_details_table(self, parent):
-        container = tk.Frame(parent)
-        header1, header2 = self._build_pair(container, 'Detail', 'Value')
-        header1.grid()
-        header2.grid(row=0, column=1)
-        container.columnconfigure(0, weight=1)
-        container.columnconfigure(1, weight=1)
-        self.load_details(container)
-        self.append_empty_detail_entry(container)
-        return container
-
-    def load_details(self, container):
-        details = self._get_details()
-        self._display_details(container, details)
-
-    def _get_details(self):
-        return self.model.custom_attributes
-
-    def _display_details(self, parent, details):
-        # row 0 used by header text
-        current_row = 1
-        current_col = 0
-        for detail in details:
-            detail_entry = tk.Entry(parent)
-            value_entry = tk.Entry(parent)
-            detail_entry.insert(0, str(detail))
-            value_entry.insert(0, str(details[detail]))
-
-            detail_entry.grid(
-                    row=current_row,
-                    column=current_col,
-                )
-            current_col += 1
-            value_entry.grid(
-                    row=current_row,
-                    column=current_col,
-                )
-            current_row += 1
-            current_col -= 1
-
-    def append_empty_detail_entry(self, parent):
-        # +1 due to header text occupying first row
-        row = len(self._get_details()) + 1
-        empty1, empty2 = self._build_pair(parent=parent, class_=tk.Entry)
-        empty1.grid(row=row, column=0)
-        empty2.grid(row=row, column=1)
-
-    def _build_pair(self, parent, txt1='', txt2='', class_=tk.Label):
-        if class_ == tk.Label:
-            w1 = class_(parent, text=txt1)
-            w2 = class_(parent, text=txt2)
-        elif class_ == tk.Entry:
-            w1 = class_(parent)
-            w1.insert(0, txt1)
-            w2 = class_(parent)
-            w2.insert(0, txt2)
-        else:
-            raise ValueError('Widget pair could not be created')
-        return w1, w2
 
     def _set_model_cost(self, *args):
         if self._is_changed('cost'):
@@ -422,5 +362,15 @@ class AddonForm(Form):
         btns_container.pack(anchor=tk.E)
 
     def _apply_addon_cmd(self):
-        print('Addon Applied')
+        self._write_changes()
         self._close_window()
+
+    def _write_changes(self):
+        try:
+            for field, value in self.inputs.items():
+                setattr(self.model, field, value)
+        except ValueError:
+            # TODO Handle invalid data
+            pass
+
+

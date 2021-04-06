@@ -64,6 +64,59 @@ class PriceOutput(MoneyOutput):
              )
 
 
+class EntryPairTable(tk.Frame):
+    def __init__(self, parent, data, *headers):
+        super().__init__(self, parent)
+        self.data = data
+
+        header_labels = self._build_pair(tk.Label, *headers)
+        self._display_headers(*header_labels)
+
+        entry_rows = self._build_rows()
+        self._display_body(*entry_rows)
+
+        self.append_empty_entries()
+        return self
+
+    def _build_pair(self, class_, *txt):
+        widget1 = class_(self)
+        widget2 = class_(self)
+        for i, widget in enumerate((widget1, widget2)):
+            if class_ == tk.Label:
+                widget.config(text=txt[i])
+            elif class_ == tk.Entry:
+                w1.insert(0, txt[i])
+        return widget1, widget2
+
+    def _display_headers(self, *headers):
+        for j, header in enumerate(headers):
+            header.grid(row=0, column=j)
+
+    def _build_rows(self):
+        for key, value in self.data.items():
+            self._build_pair(
+                    tk.Entry,
+                    key,
+                    value,
+                )
+
+    def _display_body(self, *rows):
+        # row 0 used by header text
+        for i, row in enumerate(rows, 1):
+            for j, entry in enumerate(row):
+                entry.grid(
+                    row=i,
+                    column=j,
+                )
+
+    def append_empty_detail_entry(self):
+        # note: header text occupying first row
+        row = len(self.data)
+        empty1, empty2 = self._build_pair(class_=tk.Entry)
+        empty1.grid(row=row, column=0)
+        empty2.grid(row=row, column=1)
+
+
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""
 
