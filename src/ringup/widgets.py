@@ -65,8 +65,10 @@ class PriceOutput(MoneyOutput):
 
 
 class EntryPairTable(tk.Frame):
+    MORE = 1
     def __init__(self, parent, data, *headers):
-        super().__init__(self, parent)
+        super().__init__(parent)
+        self._in_line_count = 0
         self.data = data
 
         header_labels = self._build_pair(tk.Label, *headers)
@@ -76,16 +78,16 @@ class EntryPairTable(tk.Frame):
         self._display_body(*entry_rows)
 
         self.append_empty_entries()
-        return self
+        self.control_btns = self._build_clickable_control_txt('add_more', 'remove_last')
 
     def _build_pair(self, class_, *txt):
         widget1 = class_(self)
         widget2 = class_(self)
         for i, widget in enumerate((widget1, widget2)):
-            if class_ == tk.Label:
+            if txt and class_ == tk.Label:
                 widget.config(text=txt[i])
-            elif class_ == tk.Entry:
-                w1.insert(0, txt[i])
+            elif txt and class_ == tk.Entry:
+                widget.insert(0, txt[i])
         return widget1, widget2
 
     def _display_headers(self, *headers):
@@ -93,15 +95,19 @@ class EntryPairTable(tk.Frame):
             header.grid(row=0, column=j)
 
     def _build_rows(self):
+        rows = list()
         for key, value in self.data.items():
-            self._build_pair(
+            rows.append(self._build_pair(
                     tk.Entry,
                     key,
                     value,
                 )
+            )
+            self._in_line_count += 1
+        return rows
 
     def _display_body(self, *rows):
-        # row 0 used by header text
+        # first row used by headers
         for i, row in enumerate(rows, 1):
             for j, entry in enumerate(row):
                 entry.grid(
@@ -109,13 +115,20 @@ class EntryPairTable(tk.Frame):
                     column=j,
                 )
 
-    def append_empty_detail_entry(self):
-        # note: header text occupying first row
-        row = len(self.data)
+    def append_empty_entries(self):
+        row = self._in_line_count + 1
         empty1, empty2 = self._build_pair(class_=tk.Entry)
         empty1.grid(row=row, column=0)
         empty2.grid(row=row, column=1)
+        self._in_line_count += 1
 
+    def _add_more_cmd(self):
+        self._add_extra_entries()
+        self._relocate_control_btns()
+
+    def _add_extra_entries(self):
+        for _ in range(self.MORE):
+            self.append_empty_entries()
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""

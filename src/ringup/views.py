@@ -55,7 +55,12 @@ class Form(tk.Frame):
 
     def _build_details_frame(self, parent):
         container = tk.Frame(parent)
-        table_component = w.EntryPairTable(container)
+        table_component = w.EntryPairTable(
+                container,
+                self.model.custom_attributes,
+                'Detail',
+                'Value'
+            )
         table_component.pack(fill=tk.X)
         return container
 
@@ -372,5 +377,3 @@ class AddonForm(Form):
         except ValueError:
             # TODO Handle invalid data
             pass
-
-

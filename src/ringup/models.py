@@ -35,7 +35,8 @@ class Product(ObservableMixin, ObserverMixin):
         self.waste = waste
 
         self._addons = OrderedDict()
-        self._custom_attributes = dict(**extras)
+        self._custom_attributes = dict()
+        self._custom_attributes.update(extras)
 
     def update_(self):
         self._changed()
