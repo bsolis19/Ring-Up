@@ -80,16 +80,6 @@ class EntryPairTable(tk.Frame):
         self.append_empty_entries()
         self.control_btns = self._build_clickable_control_txt('add_more', 'remove_last')
 
-    def _build_pair(self, class_, *txt):
-        widget1 = class_(self)
-        widget2 = class_(self)
-        for i, widget in enumerate((widget1, widget2)):
-            if txt and class_ == tk.Label:
-                widget.config(text=txt[i])
-            elif txt and class_ == tk.Entry:
-                widget.insert(0, txt[i])
-        return widget1, widget2
-
     def _display_headers(self, *headers):
         for j, header in enumerate(headers):
             header.grid(row=0, column=j)
@@ -129,6 +119,20 @@ class EntryPairTable(tk.Frame):
     def _add_extra_entries(self):
         for _ in range(self.MORE):
             self.append_empty_entries()
+
+class EntryPair(tk.Frame):
+    def __init__(self, txt1='', txt2=''):
+
+    def _build_pair(self, class_, *txt):
+        widget1 = class_(self)
+        widget2 = class_(self)
+        for i, widget in enumerate((widget1, widget2)):
+            if txt and class_ == tk.Label:
+                widget.config(text=txt[i])
+            elif txt and class_ == tk.Entry:
+                widget.insert(0, txt[i])
+        return widget1, widget2
+
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""
