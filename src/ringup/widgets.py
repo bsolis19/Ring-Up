@@ -120,10 +120,12 @@ class EntryPairTable(tk.Frame):
         for _ in range(self.MORE):
             self.append_empty_entries()
 
-class EntryPair(tk.Frame):
-    def __init__(self, txt1='', txt2=''):
+class WidgetPair(tk.Frame):
+    def __init__(self, parent, class_, *values):
+        super().__init__(parent)
+        self.widgets = self._build_pair(class_, *values)
 
-    def _build_pair(self, class_, *txt):
+    def _build_pair(self, class_, txt1='', txt2=''):
         widget1 = class_(self)
         widget2 = class_(self)
         for i, widget in enumerate((widget1, widget2)):
@@ -132,6 +134,18 @@ class EntryPair(tk.Frame):
             elif txt and class_ == tk.Entry:
                 widget.insert(0, txt[i])
         return widget1, widget2
+
+    def _display_widgets(self, display_cmd='pack', display_args=None):
+        if display_cmd == 'grid' and display_args:
+            for i, w in enumerate(self.widgets):
+                w.grid(column=i, **display_args)
+
+        for w in self.widgets:
+            getattr(w, display_cmd)(**display_args)
+
+class EntryPair(WidgetPair):
+    def __init__(self, parent, *values):
+        super().__init__(parent, tk.Entry, *values)
 
 
 class LabelInput(tk.Frame):
