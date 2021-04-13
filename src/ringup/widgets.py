@@ -71,30 +71,34 @@ class EntryPairTable(tk.Frame):
         self._in_line_count = 0
         self.data = data
 
-        header_labels = self._build_pair(tk.Label, *headers)
-        self._display_headers(*header_labels)
+        self.head = self._build_headers(*headers)
+        self.body = self._build_body()
 
-        entry_rows = self._build_rows()
-        self._display_body(*entry_rows)
+        self._display_head()
+        self._display_body()
 
-        self.append_empty_entries()
-        self.control_btns = self._build_clickable_control_txt('add_more', 'remove_last')
+#        self.append_empty_entries()
+#        self.control_btns = self._build_clickable_control_txt('add_more', 'remove_last')
+#
+    def _build_headers(self, lead_title, follow_title):
+        return LabelPair(self, lead_title, follow_title)
 
-    def _display_headers(self, *headers):
-        for j, header in enumerate(headers):
-            header.grid(row=0, column=j)
+    def _build_body(self):
+       return self._build_rows()
+
+    def _display_head(self):
+        self.head.pack()
 
     def _build_rows(self):
-        rows = list()
+        container = tk.Frame(self)
         for key, value in self.data.items():
-            rows.append(self._build_pair(
-                    tk.Entry,
+            EntryPair(
+                    container,
                     key,
                     value,
                 )
             )
-            self._in_line_count += 1
-        return rows
+        return container
 
     def _display_body(self, *rows):
         # first row used by headers
@@ -125,28 +129,37 @@ class WidgetPair(tk.Frame):
         super().__init__(parent)
         self.widgets = self._build_pair(class_, *values)
 
-    def _build_pair(self, class_, txt1='', txt2=''):
-        widget1 = class_(self)
-        widget2 = class_(self)
-        for i, widget in enumerate((widget1, widget2)):
-            if txt and class_ == tk.Label:
-                widget.config(text=txt[i])
-            elif txt and class_ == tk.Entry:
-                widget.insert(0, txt[i])
-        return widget1, widget2
+    def _build_pair(self, class_, lead_txt='', follow_txt=''):
+        lead_widget = class_(self)
+        follow_widget = class_(self)
+        widgets = (lead_widget, follow_widget)
+        if lead_txt and follow_txt:
+            txts = (lead_txt, follow_txt)
+            for i, widget in enumerate(widgets):
+                if class_ == tk.Label:
+                    widget.config(text=txt[i])
+                elif class_ == tk.Entry:
+                    widget.insert(0, txt[i])
+        return widgets
 
     def _display_widgets(self, display_cmd='pack', display_args=None):
-        if display_cmd == 'grid' and display_args:
-            for i, w in enumerate(self.widgets):
-                w.grid(column=i, **display_args)
-
         for w in self.widgets:
             getattr(w, display_cmd)(**display_args)
 
-class EntryPair(WidgetPair):
+class GridBlock:
+    def _display_widgets(self):
+        for i, w in enumerate(self.widgets):
+            w.grid(column=i)
+
+class EntryPair(GridBlock, WidgetPair):
     def __init__(self, parent, *values):
         super().__init__(parent, tk.Entry, *values)
+        self._display_widgets()
 
+class LabelPair(GridBlock, WidgetPair):
+    def __init__(self, parent, *values):
+        super().__init__(parent, tk.Label, *values)
+        self._display_widgets()
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""
