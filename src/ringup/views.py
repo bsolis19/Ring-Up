@@ -97,7 +97,7 @@ class Form(tk.Frame):
         except ValueError:
             return True
 
-    def _build_popup(self):
+    def _build_modal(self):
         return tk.Toplevel(self.winfo_toplevel())
 
     def _cancel_cmd(self):
@@ -287,7 +287,7 @@ class ProductForm(Form):
         print('delete clicked')
 
     def _open_add_addon_window(self):
-        new_window = self._build_popup()
+        new_window = self._build_modal()
         AddonForm(new_window, self.model, 'new', None, None).pack()
 
 
