@@ -70,6 +70,7 @@ class EntryPairTable(tk.Frame):
         super().__init__(parent)
         self._in_line_count = 0
         self.data = data
+        self.rows = list()
 
         self.head = self._build_headers(*headers)
         self.body = self._build_body()
@@ -84,15 +85,15 @@ class EntryPairTable(tk.Frame):
         return LabelPair(self, lead_title, follow_title)
 
     def _build_body(self):
-       return self._build_rows()
+       return self._build_and_register_rows()
 
     def _display_head(self):
         self.head.pack()
 
-    def _build_rows(self):
+    def _build_and_register_rows(self):
         container = tk.Frame(self)
         for key, value in self.data.items():
-            EntryPair(
+            self.rows.append(EntryPair(
                     container,
                     key,
                     value,
@@ -100,14 +101,9 @@ class EntryPairTable(tk.Frame):
             )
         return container
 
-    def _display_body(self, *rows):
-        # first row used by headers
-        for i, row in enumerate(rows, 1):
-            for j, entry in enumerate(row):
-                entry.grid(
-                    row=i,
-                    column=j,
-                )
+    def _display_body(self):
+        for row in self.rows:
+            row.pack()
 
     def append_empty_entries(self):
         row = self._in_line_count + 1
@@ -137,9 +133,9 @@ class WidgetPair(tk.Frame):
             txts = (lead_txt, follow_txt)
             for i, widget in enumerate(widgets):
                 if class_ == tk.Label:
-                    widget.config(text=txt[i])
+                    widget.config(text=txts[i])
                 elif class_ == tk.Entry:
-                    widget.insert(0, txt[i])
+                    widget.insert(0, txts[i])
         return widgets
 
     def _display_widgets(self, display_cmd='pack', display_args=None):
@@ -149,7 +145,7 @@ class WidgetPair(tk.Frame):
 class GridBlock:
     def _display_widgets(self):
         for i, w in enumerate(self.widgets):
-            w.grid(column=i)
+            w.grid(column=i, row=0)
 
 class EntryPair(GridBlock, WidgetPair):
     def __init__(self, parent, *values):
