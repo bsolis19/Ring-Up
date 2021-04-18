@@ -65,7 +65,7 @@ class PriceOutput(MoneyOutput):
 
 
 class EntryPairTable(tk.Frame):
-    MORE = 1
+    MORE_ENTRIES = 1
     def __init__(self, parent, data, *headers):
         super().__init__(parent)
         self._in_line_count = 0
@@ -78,7 +78,7 @@ class EntryPairTable(tk.Frame):
         self._display_head()
         self._display_body()
 
-#        self.append_empty_entries()
+        self.append_empty_entries()
 #        self.control_btns = self._build_clickable_control_txt('add_more', 'remove_last')
 #
     def _build_headers(self, lead_title, follow_title):
@@ -104,13 +104,12 @@ class EntryPairTable(tk.Frame):
     def _display_body(self):
         for row in self.rows:
             row.pack()
+        self.body.pack()
 
     def append_empty_entries(self):
-        row = self._in_line_count + 1
-        empty1, empty2 = self._build_pair(class_=tk.Entry)
-        empty1.grid(row=row, column=0)
-        empty2.grid(row=row, column=1)
-        self._in_line_count += 1
+        for i in range(EntryPairTable.MORE_ENTRIES):
+            self.rows.append(EntryPair(self.body))
+            self.rows[-1].pack()
 
     def _add_more_cmd(self):
         self._add_extra_entries()
