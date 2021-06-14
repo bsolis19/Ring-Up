@@ -1,7 +1,11 @@
 import logging
 import sys
-logging.basicConfig( stream=sys.stderr, level=logging.DEBUG)
 
+logging.basicConfig(
+        format='[%(asctime)s]:%(levelname)s:%(name)s: %(message)s',
+        stream=sys.stderr,
+        level=logging.DEBUG,
+    )
 
 def logged(class_):
     class_.logger = logging.getLogger(class_.__qualname__)
