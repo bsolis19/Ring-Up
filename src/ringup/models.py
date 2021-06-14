@@ -23,58 +23,72 @@ class Product(ObservableMixin, ObserverMixin):
             description='',
             fixed_cost=0,
             waste=0.0,
+            template=False,
             **extras
             ):
         super().__init__()
+        self.name = name
         self.id_ = str(id_)
         self.sku = sku
-        self.name = name
         self.cost = cost
         self.description = description
         self.fixed_cost = fixed_cost
         self.waste = waste
+        self.template = template
 
         self._addons = OrderedDict()
-        self._custom_attributes = dict()
-        self._custom_attributes.update(extras)
+        self._custom_attributes = dict(**extras)
+        self.logger.info(
+                "Initialized Product {name} ({id_})".format(name=self._name, id_=self.id_)
+            )
 
     def update_(self):
         self._changed()
+        self.logger.debug("Updating observer {name}".format(name=self._name))
 
     def calculate_price(self, margin=.75):
+        self.logger.debug("Calculating price for {name}".format(name=self._name))
         return round((self.total_cost) / (1 - margin), 2)
 
     def calculate_profit(self, margin=.75):
+        self.logger.debug("Calculating profit for {name}".format(name=self._name))
         return round((self.calculate_price(margin) * margin), 2)
 
     @property
     def total_cost(self):
-        if len(self.addons) < 0:
+        self.logger.debug("Calculating total cost for {name}".format(name=self._name))
+        if len(self.addons) > 0:
             return list(self.addons.values())[-1].total_cost()
         return self.calculated_cost + self.fixed_cost
 
     @property
     def calculated_cost(self):
+        self.logger.debug("Calculating standard cost for {name}".format(name=self._name))
         return self.cost * (1 + self.waste)
 
     @property
     def addons(self):
+        self.logger.debug("Getting addons for {name}".format(name=self._name))
         return self._addons
 
     def get_addon(self, id_):
+        self.logger.debug("Getting addon with id {id_}".format(id_=id_))
         return self.addons.get(id_, None)
 
     def _register_addon(self, addon):
+       self.logger.info("Registering addon {a_name} with product {p_name}".format(a_name=addon.name, p_name=self._name))
        self._addons[addon.id_] = addon
        self._changed()
        addon.registerObserver(self)
 
     def remove_addon(self, id_):
+        self.logger.info("Removing addon {id_}".format(id_=id_))
         del self._addons[id_]
         self._changed()
 
     @property
     def sku(self):
+        self.logger.debug("Getting sku for product {name}".format(name=self._name))
         return self._sku
 
     @sku.setter
@@ -85,9 +99,11 @@ class Product(ObservableMixin, ObserverMixin):
             self._sku = value
         else:
             raise TypeError('SKU must be a string')
+        self.logger.info("Successfully set SKU to {sku} for {name}".format(sku=value, name=self._name))
 
     @property
     def name(self):
+        self.logger.debug("Getting name for product {name}".format(name=self._name))
         return self._name
 
     @name.setter
@@ -96,9 +112,11 @@ class Product(ObservableMixin, ObserverMixin):
             self._name = value.title()
         except AttributeError:
             raise TypeError
+        self.logger.info("Successfully set name to {name}".format(name=value))
 
     @property
     def cost(self):
+        self.logger.debug("Getting variable cost for {name}".format(name=self._name))
         # cost can be a CostFormula instance
         try:
             return self._cost.get_cost()
@@ -109,26 +127,31 @@ class Product(ObservableMixin, ObserverMixin):
     def cost(self, value):
         self._validate_cost(value)
         self._cost = value
+        self.logger.info("Successfully set variable cost to {cost} for {name}".format(cost=value, name=self._name))
         self._changed()
 
     @property
     def fixed_cost(self):
+        self.logger.debug("Getting fixed cost for {name}".format(name=self._name))
         return self._fixed_cost
 
     @fixed_cost.setter
     def fixed_cost(self, value):
         self._validate_cost(value)
         self._fixed_cost = value
+        self.logger.info("Successfully set fixed cost to {cost} for {name}".format(cost=value, name=self._name))
         self._changed()
 
     @property
     def waste(self):
+        self.logger.debug("Getting waste for {name}".format(name=self._name))
         return self._waste
 
     @waste.setter
     def waste(self, value):
         self._validate_waste(value)
         self._waste = float(abs(value))
+        self.logger.info("Successfully set waste to {waste} for {name}".format(waste=value, name=self._name))
         self._changed()
 
     def _validate_waste(self, waste):
@@ -136,14 +159,29 @@ class Product(ObservableMixin, ObserverMixin):
             raise ValueError("Waste cannot be more than 15%")
 
     @property
+    def is_template(self):
+        self.logger.debug("Getting is_template for {name}".format(name=self._name))
+        return self._is_template
+
+    @is_template.setter
+    def is_template(self, value):
+        if not isinstance(value, Boolean):
+            raise TypeError("is_template must be a Boolean type")
+        self._is_template = value
+        self.logger.info("Successfully set is_template to {0}".format(value))
+
+    @property
     def custom_attributes(self):
+        self.logger.debug("Getting custom attributes for {name}".format(name=self._name))
         return self._custom_attributes
 
     def set_custom_attribute(self, name, value):
         self._custom_attributes[name] = value
+        self.logger.info("Successfully set custom attribute {name}: {value} for {name_}".format(name=name, value=value, name_=self.name))
         self._changed()
 
     def get_custom_attribute(self, name):
+        self.logger.debug("Getting custom attribute {name} for {name_}".format(name=name, name_=self.name))
         return self._custom_attributes[name]
 
     def _validate_cost(self, cost):
