@@ -23,6 +23,7 @@ class Product(ObservableMixin, ObserverMixin):
             description='',
             fixed_cost=0,
             waste=0.0,
+            template=False,
             **extras
             ):
         super().__init__()
@@ -33,6 +34,7 @@ class Product(ObservableMixin, ObserverMixin):
         self.description = description
         self.fixed_cost = fixed_cost
         self.waste = waste
+        self.template = template
 
         self._addons = OrderedDict()
         self._custom_attributes = dict(**extras)
@@ -155,6 +157,18 @@ class Product(ObservableMixin, ObserverMixin):
     def _validate_waste(self, waste):
         if (waste > .15):
             raise ValueError("Waste cannot be more than 15%")
+
+    @property
+    def is_template(self):
+        self.logger.debug("Getting is_template for {name}".format(name=self._name))
+        return self._is_template
+
+    @is_template.setter
+    def is_template(self, value):
+        if not isinstance(value, Boolean):
+            raise TypeError("is_template must be a Boolean type")
+        self._is_template = value
+        self.logger.info("Successfully set is_template to {0}".format(value))
 
     @property
     def custom_attributes(self):
