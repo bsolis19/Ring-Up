@@ -55,13 +55,18 @@ class Form(tk.Frame):
 
     def _build_details_frame(self, parent):
         container = tk.Frame(parent)
-        table_component = w.EntryPairTable(
+        dict_view = w.DictView(
                 container,
                 self.model.custom_attributes,
-                'Detail',
-                'Value'
             )
-        table_component.pack(fill=tk.X)
+        dict_view.pack()
+        # table_component = w.EntryPairTable(
+        #         container,
+        #         self.model.custom_attributes,
+        #         'Detail',
+        #         'Value'
+        #     )
+        # table_component.pack(fill=tk.X)
         return container
 
     def _set_model_cost(self, *args):

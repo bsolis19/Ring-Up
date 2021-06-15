@@ -64,6 +64,27 @@ class PriceOutput(MoneyOutput):
              )
 
 
+class DictView(tk.Frame):
+    def __init__(self, parent, data):
+        super().__init__(parent)
+        self.data = data
+        self.entries = list()
+        self._build()
+
+    def _build(self):
+        container = tk.Frame(self)
+        for key, value in self.data.items():
+            self.entries.append(
+                    LabelInput(
+                        container,
+                        key,
+                    )
+                )
+            self.entries[-1].set(value)
+            self.entries[-1].pack()
+        container.pack()
+
+
 class EntryPairTable(tk.Frame):
     MORE_ENTRIES = 1
     def __init__(self, parent, data, *headers):
