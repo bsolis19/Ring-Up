@@ -165,7 +165,7 @@ class Product(ObservableMixin, ObserverMixin):
 
     @is_template.setter
     def is_template(self, value):
-        if not isinstance(value, Boolean):
+        if not isinstance(value, bool):
             raise TypeError("is_template must be a Boolean type")
         self._is_template = value
         self.logger.info("Successfully set is_template to {0}".format(value))
