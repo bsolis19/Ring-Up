@@ -23,7 +23,7 @@ class Product(ObservableMixin, ObserverMixin):
             description='',
             fixed_cost=0,
             waste=0.0,
-            template=False,
+            is_template=False,
             **extras
             ):
         super().__init__()
@@ -34,7 +34,7 @@ class Product(ObservableMixin, ObserverMixin):
         self.description = description
         self.fixed_cost = fixed_cost
         self.waste = waste
-        self.template = template
+        self.is_template = is_template
 
         self._addons = OrderedDict()
         self._custom_attributes = dict(**extras)
