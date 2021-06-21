@@ -64,6 +64,123 @@ class PriceOutput(MoneyOutput):
              )
 
 
+class DictView(tk.Frame):
+    def __init__(self, parent, data):
+        super().__init__(parent)
+        self.data = data
+        self.entries = list()
+        self.new_entry = None
+        self._build()
+
+    def _build(self):
+        self._add_controls(self).pack()
+        self._add_data(self, self.data)
+
+    def _add_controls(self, parent):
+        container = tk.Frame(parent)
+        self.new_entry = EntryPair(container)
+        add_btn = tk.Button(
+                container,
+                text="Add",
+                command=self.add_entry_cmd,
+            )
+
+        self.new_entry.grid(column=0)
+        add_btn.grid(column=1, row=0)
+
+        return container
+
+    def _add_data(self, parent, data):
+        for key, value in data.items():
+            container = tk.Frame(parent)
+            labelInput = LabelInput(
+                    container,
+                    key,
+                )
+            self._add_delete_btn(container, key).grid()
+            labelInput.grid(row=0, column=1)
+            labelInput.set(value)
+            container.pack()
+            self.entries.append(labelInput)
+
+    def _add_delete_btn(self, parent, key):
+        return tk.Button(
+                parent,
+                text="Delete",
+                command=lambda: self.delete_entry_cmd(key),
+            )
+
+    def delete_entry_cmd(self, key):
+        self._remove_entry(key)
+
+    def _remove_entry(self, key):
+        target = None
+        for labelInput in self.entries:
+            if(labelInput.label.cget('text') == key):
+                target = labelInput
+                break
+        if (target is not None):
+            del self.data[key]
+            container = target.master
+            self.entries.remove(target)
+            container.destroy()
+
+    def _clear_new_entry(self):
+        for entry in self.new_entry.widgets:
+            entry.delete(0, tk.END)
+
+    def add_entry_cmd(self):
+        key = self.new_entry.widgets[0].get().strip().lower()
+        if len(key) != 0 and key not in self.data:
+            value = self.new_entry.widgets[1].get().strip()
+            self.data[key] = value
+
+            self._add_data(self, {key: value})
+
+        self._clear_new_entry()
+
+
+class WidgetPair(tk.Frame):
+    def __init__(self, parent, class_, *values):
+        super().__init__(parent)
+        self.widgets = self._build_pair(class_, *values)
+
+    def _build_pair(self, class_, lead_txt='', follow_txt=''):
+        lead_widget = class_(self)
+        follow_widget = class_(self)
+        widgets = (lead_widget, follow_widget)
+        if lead_txt and follow_txt:
+            txts = (lead_txt, follow_txt)
+            for i, widget in enumerate(widgets):
+                if class_ == tk.Label:
+                    widget.config(text=txts[i])
+                elif class_ == tk.Entry:
+                    widget.insert(0, txts[i])
+        return widgets
+
+    def _display_widgets(self, display_cmd='pack', display_args=None):
+        for w in self.widgets:
+            getattr(w, display_cmd)(**display_args)
+
+
+class GridBlock:
+    def _display_widgets(self):
+        for i, w in enumerate(self.widgets):
+            w.grid(column=i, row=0)
+
+
+class EntryPair(GridBlock, WidgetPair):
+    def __init__(self, parent, *values):
+        super().__init__(parent, tk.Entry, *values)
+        self._display_widgets()
+
+
+class LabelPair(GridBlock, WidgetPair):
+    def __init__(self, parent, *values):
+        super().__init__(parent, tk.Label, *values)
+        self._display_widgets()
+
+
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""
 

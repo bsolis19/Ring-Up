@@ -1,7 +1,6 @@
 """Main controller for ringup."""
 
 import tkinter as tk
-from tkinter import ttk
 
 from . import views as v
 from . import models as m
@@ -18,7 +17,14 @@ class Application(tk.Tk):
         self.geometry('%sx%s' % (s.WINDOW_WIDTH, s.WINDOW_HEIGHT))
 
         # data model
-        self.data_model = m.Product('1001', '12r', 'Dozen Roses', 29.99, color='red')
+        self.data_model = m.Product(
+                '1001',
+                '12r',
+                'Dozen Roses',
+                29.99,
+                color='red',
+                origin='Mexico'
+            )
 
         # settings model & settings
         config_dir = s.CONFIG_DIR or '~'
