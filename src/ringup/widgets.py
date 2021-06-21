@@ -69,21 +69,51 @@ class DictView(tk.Frame):
         super().__init__(parent)
         self.data = data
         self.entries = list()
+        self.new_entry = None
         self._build()
 
     def _build(self):
-        container = tk.Frame(self)
-        for key, value in self.data.items():
+        self._add_controls(self).pack()
+        self._add_data(self, self.data)
+
+    def _add_controls(self, parent):
+        container = tk.Frame(parent)
+        self.new_entry = EntryPair(container)
+        add_btn = tk.Button(
+                container,
+                text="Add",
+                command=self.add_entry_cmd,
+            )
+
+        self.new_entry.grid(column=0)
+        add_btn.grid(column=1, row=0)
+
+        return container
+
+    def _add_data(self, parent, data):
+        for key, value in data.items():
             self.entries.append(
                     LabelInput(
-                        container,
+                        parent,
                         key,
                     )
                 )
             self.entries[-1].set(value)
             self.entries[-1].pack()
-        container.pack()
 
+    def _clear_new_entry(self):
+        for entry in self.new_entry.widgets:
+            entry.delete(0, tk.END)
+
+    def add_entry_cmd(self):
+        key = self.new_entry.widgets[0].get().strip().lower()
+        if len(key) is not 0 and key not in self.data:
+            value = self.new_entry.widgets[1].get().strip()
+            self.data[key] = value
+            
+            self._add_data(self, {key: value})
+
+        self._clear_new_entry()
 
 class EntryPairTable(tk.Frame):
     MORE_ENTRIES = 1
