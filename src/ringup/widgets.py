@@ -92,14 +92,38 @@ class DictView(tk.Frame):
 
     def _add_data(self, parent, data):
         for key, value in data.items():
-            self.entries.append(
-                    LabelInput(
-                        parent,
-                        key,
-                    )
+            container = tk.Frame(parent)
+            labelInput = LabelInput(
+                    container,
+                    key,
                 )
-            self.entries[-1].set(value)
-            self.entries[-1].pack()
+            self._add_delete_btn(container, key).grid()
+            labelInput.grid(row=0, column=1)
+            labelInput.set(value)
+            container.pack()
+            self.entries.append(labelInput)
+
+    def _add_delete_btn(self, parent, key):
+        return tk.Button(
+                parent,
+                text="Delete",
+                command=lambda: self.delete_entry_cmd(key),
+            )
+
+    def delete_entry_cmd(self, key):
+        self._remove_entry(key)
+
+    def _remove_entry(self, key):
+        target = None
+        for labelInput in self.entries:
+            if(labelInput.label.cget('text') == key):
+                target = labelInput
+                break
+        if (target is not None):
+            del self.data[key]
+            container = target.master
+            self.entries.remove(target)
+            container.destroy()
 
     def _clear_new_entry(self):
         for entry in self.new_entry.widgets:
@@ -107,68 +131,14 @@ class DictView(tk.Frame):
 
     def add_entry_cmd(self):
         key = self.new_entry.widgets[0].get().strip().lower()
-        if len(key) is not 0 and key not in self.data:
+        if len(key) != 0 and key not in self.data:
             value = self.new_entry.widgets[1].get().strip()
             self.data[key] = value
-            
+
             self._add_data(self, {key: value})
 
         self._clear_new_entry()
 
-class EntryPairTable(tk.Frame):
-    MORE_ENTRIES = 1
-    def __init__(self, parent, data, *headers):
-        super().__init__(parent)
-        self._in_line_count = 0
-        self.data = data
-        self.rows = list()
-
-        self.head = self._build_headers(*headers)
-        self.body = self._build_body()
-
-        self._display_head()
-        self._display_body()
-
-        self.append_empty_entries()
-#        self.control_btns = self._build_clickable_control_txt('add_more', 'remove_last')
-#
-    def _build_headers(self, lead_title, follow_title):
-        return LabelPair(self, lead_title, follow_title)
-
-    def _build_body(self):
-       return self._build_and_register_rows()
-
-    def _display_head(self):
-        self.head.pack()
-
-    def _build_and_register_rows(self):
-        container = tk.Frame(self)
-        for key, value in self.data.items():
-            self.rows.append(EntryPair(
-                    container,
-                    key,
-                    value,
-                )
-            )
-        return container
-
-    def _display_body(self):
-        for row in self.rows:
-            row.pack()
-        self.body.pack()
-
-    def append_empty_entries(self):
-        for i in range(EntryPairTable.MORE_ENTRIES):
-            self.rows.append(EntryPair(self.body))
-            self.rows[-1].pack()
-
-    def _add_more_cmd(self):
-        self._add_extra_entries()
-        self._relocate_control_btns()
-
-    def _add_extra_entries(self):
-        for _ in range(self.MORE):
-            self.append_empty_entries()
 
 class WidgetPair(tk.Frame):
     def __init__(self, parent, class_, *values):
@@ -192,20 +162,24 @@ class WidgetPair(tk.Frame):
         for w in self.widgets:
             getattr(w, display_cmd)(**display_args)
 
+
 class GridBlock:
     def _display_widgets(self):
         for i, w in enumerate(self.widgets):
             w.grid(column=i, row=0)
+
 
 class EntryPair(GridBlock, WidgetPair):
     def __init__(self, parent, *values):
         super().__init__(parent, tk.Entry, *values)
         self._display_widgets()
 
+
 class LabelPair(GridBlock, WidgetPair):
     def __init__(self, parent, *values):
         super().__init__(parent, tk.Label, *values)
         self._display_widgets()
+
 
 class LabelInput(tk.Frame):
     """A widget containing a label and input together."""
