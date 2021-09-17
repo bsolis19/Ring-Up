@@ -72,7 +72,7 @@ def id_costformula_idata_func(fixture_value):
 @pytest.fixture()
 def a_product():
     """Return something simple."""
-    return Product("3-16G", "Glass", 30, "small sheet", 0.11, 0.02 )
+    return Product(1934, "3-16G", "Glass", 30, "small sheet", 0.11, 0.02 )
 
 @pytest.fixture()
 def a_product_with_an_addon(an_addon):
@@ -82,7 +82,7 @@ def a_product_with_an_addon(an_addon):
 @pytest.fixture()
 def an_addon(a_product):
     """Return some simple addon."""
-    return Addon(a_product, "BV2", "Bevel Finish", 3.49, "2-inch")
+    return Addon(a_product, 325, "BV2", "Bevel Finish", 3.49, "2-inch")
 
 
 @pytest.fixture()
@@ -145,7 +145,7 @@ class TestProduct:
         assert p.fixed_cost == 0.11
         assert p.waste == 0.02
 
-        p_with_new_attr = Product(p.sku, p.name, p.cost, size="48x96")
+        p_with_new_attr = Product(p.id_, p.sku, p.name, p.cost, size="48x96")
         assert p_with_new_attr.get_custom_attribute('size') == "48x96"
 
     def test_member_mutate(self, a_product):
@@ -172,8 +172,8 @@ class TestProduct:
     def test_defaults(self, a_product):
         """Using no optional parameters should invoke defaults."""
         p = a_product
-        p1 = Product(p.sku, p.name, p.cost)
-        p2 = Product(p.sku, p.name, p.cost, "", 0, 0.0)
+        p1 = Product(p.id_, p.sku, p.name, p.cost)
+        p2 = Product(p.id_, p.sku, p.name, p.cost, "", 0, 0.0)
         assert p1 == p2
 
     def test_cost_as_CostFormula(self, a_product, a_costformula):
@@ -200,11 +200,11 @@ class TestProduct:
         """remove_addon() should remove the addon from addons collection"""
         p = a_product_with_an_addon
         a = an_addon
-        ADDON_SKU = a.sku
-        assert p.addons.get(ADDON_SKU, None) == a
+        ADDON_ID = a.id_
+        assert p.addons.get(ADDON_ID, None) == a
 
-        p.remove_addon(ADDON_SKU)
-        assert p.addons.get(ADDON_SKU, None) == None
+        p.remove_addon(ADDON_ID)
+        assert p.addons.get(ADDON_ID, None) == None
 
     def test_new_product_raises_TypeError(self, invalid_type_product_data):
         """Product() should raise an exception with invalid param."""
