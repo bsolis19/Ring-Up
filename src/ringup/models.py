@@ -5,7 +5,6 @@ import json
 import re
 
 import ringup.lib.formula as fi
-import tkinter as tk
 
 from collections import OrderedDict
 from ringup.lib.observables import ObservableMixin, ObserverMixin
@@ -39,7 +38,11 @@ class Product(ObservableMixin, ObserverMixin):
         self._addons = OrderedDict()
         self._custom_attributes = dict(**extras)
         self.logger.info(
-                "Initialized Product {name} ({id_})".format(name=self._name, id_=self.id_)
+                "Initialized Product {name} ({id_})"
+                .format(
+                    name=self._name,
+                    id_=self.id_
+                )
             )
 
     def update_(self):
@@ -47,23 +50,27 @@ class Product(ObservableMixin, ObserverMixin):
         self.logger.debug("Updating observer {name}".format(name=self._name))
 
     def calculate_price(self, margin=.75):
-        self.logger.debug("Calculating price for {name}".format(name=self._name))
+        self.logger.debug("Calculating price for {name}"
+                          .format(name=self._name))
         return round((self.total_cost) / (1 - margin), 2)
 
     def calculate_profit(self, margin=.75):
-        self.logger.debug("Calculating profit for {name}".format(name=self._name))
+        self.logger.debug("Calculating profit for {name}"
+                          .format(name=self._name))
         return round((self.calculate_price(margin) * margin), 2)
 
     @property
     def total_cost(self):
-        self.logger.debug("Calculating total cost for {name}".format(name=self._name))
+        self.logger.debug("Calculating total cost for {name}"
+                          .format(name=self._name))
         if len(self.addons) > 0:
             return list(self.addons.values())[-1].total_cost()
         return self.calculated_cost + self.fixed_cost
 
     @property
     def calculated_cost(self):
-        self.logger.debug("Calculating standard cost for {name}".format(name=self._name))
+        self.logger.debug("Calculating standard cost for {name}"
+                          .format(name=self._name))
         return self.cost * (1 + self.waste)
 
     @property
@@ -76,10 +83,16 @@ class Product(ObservableMixin, ObserverMixin):
         return self.addons.get(id_, None)
 
     def _register_addon(self, addon):
-       self.logger.info("Registering addon {a_name} with product {p_name}".format(a_name=addon.name, p_name=self._name))
-       self._addons[addon.id_] = addon
-       self._changed()
-       addon.registerObserver(self)
+        self.logger.info(
+                "Registering addon {a_name} with product {p_name}"
+                .format(
+                    a_name=addon.name,
+                    p_name=self._name,
+                )
+            )
+        self._addons[addon.id_] = addon
+        self._changed()
+        addon.registerObserver(self)
 
     def remove_addon(self, id_):
         self.logger.info("Removing addon {id_}".format(id_=id_))
@@ -88,7 +101,8 @@ class Product(ObservableMixin, ObserverMixin):
 
     @property
     def sku(self):
-        self.logger.debug("Getting sku for product {name}".format(name=self._name))
+        self.logger.debug("Getting sku for product {name}"
+                          .format(name=self._name))
         return self._sku
 
     @sku.setter
@@ -99,11 +113,18 @@ class Product(ObservableMixin, ObserverMixin):
             self._sku = value
         else:
             raise TypeError('SKU must be a string')
-        self.logger.info("Successfully set SKU to {sku} for {name}".format(sku=value, name=self._name))
+        self.logger.info(
+                "Successfully set SKU to {sku} for {name}"
+                .format(
+                    sku=value,
+                    name=self._name,
+                )
+        )
 
     @property
     def name(self):
-        self.logger.debug("Getting name for product {name}".format(name=self._name))
+        self.logger.debug("Getting name for product {name}"
+                          .format(name=self._name))
         return self._name
 
     @name.setter
@@ -116,7 +137,8 @@ class Product(ObservableMixin, ObserverMixin):
 
     @property
     def cost(self):
-        self.logger.debug("Getting variable cost for {name}".format(name=self._name))
+        self.logger.debug("Getting variable cost for {name}"
+                          .format(name=self._name))
         # cost can be a CostFormula instance
         try:
             return self._cost.get_cost()
@@ -127,19 +149,32 @@ class Product(ObservableMixin, ObserverMixin):
     def cost(self, value):
         self._validate_cost(value)
         self._cost = value
-        self.logger.info("Successfully set variable cost to {cost} for {name}".format(cost=value, name=self._name))
+        self.logger.info(
+                "Successfully set variable cost to {cost} for {name}"
+                .format(
+                    cost=value,
+                    name=self._name
+                )
+            )
         self._changed()
 
     @property
     def fixed_cost(self):
-        self.logger.debug("Getting fixed cost for {name}".format(name=self._name))
+        self.logger.debug("Getting fixed cost for {name}"
+                          .format(name=self._name))
         return self._fixed_cost
 
     @fixed_cost.setter
     def fixed_cost(self, value):
         self._validate_cost(value)
         self._fixed_cost = value
-        self.logger.info("Successfully set fixed cost to {cost} for {name}".format(cost=value, name=self._name))
+        self.logger.info(
+                "Successfully set fixed cost to {cost} for {name}"
+                .format(
+                    cost=value,
+                    name=self._name,
+                )
+            )
         self._changed()
 
     @property
@@ -151,7 +186,13 @@ class Product(ObservableMixin, ObserverMixin):
     def waste(self, value):
         self._validate_waste(value)
         self._waste = float(abs(value))
-        self.logger.info("Successfully set waste to {waste} for {name}".format(waste=value, name=self._name))
+        self.logger.info(
+                "Successfully set waste to {waste} for {name}"
+                .format(
+                    waste=value,
+                    name=self._name,
+                )
+            )
         self._changed()
 
     def _validate_waste(self, waste):
@@ -160,7 +201,8 @@ class Product(ObservableMixin, ObserverMixin):
 
     @property
     def is_template(self):
-        self.logger.debug("Getting is_template for {name}".format(name=self._name))
+        self.logger.debug("Getting is_template for {name}"
+                          .format(name=self._name))
         return self._is_template
 
     @is_template.setter
@@ -172,16 +214,29 @@ class Product(ObservableMixin, ObserverMixin):
 
     @property
     def custom_attributes(self):
-        self.logger.debug("Getting custom attributes for {name}".format(name=self._name))
+        self.logger.debug("Getting custom attributes for {name}"
+                          .format(name=self._name))
         return self._custom_attributes
 
     def set_custom_attribute(self, name, value):
         self._custom_attributes[name] = value
-        self.logger.info("Successfully set custom attribute {name}: {value} for {name_}".format(name=name, value=value, name_=self.name))
+        self.logger.info(
+                "Successfully set custom attribute {name}: {value} for {name_}"
+                .format(
+                    name=name,
+                    value=value,
+                    name_=self.name
+                )
+            )
         self._changed()
 
     def get_custom_attribute(self, name):
-        self.logger.debug("Getting custom attribute {name} for {name_}".format(name=name, name_=self.name))
+        self.logger.debug("Getting custom attribute {name} for {name_}"
+                          .format(
+                              name=name,
+                              name_=self.name
+                            )
+                          )
         return self._custom_attributes[name]
 
     def _validate_cost(self, cost):
@@ -226,14 +281,16 @@ class Addon(Product):
         return self.product.get_addon(id_)
 
     def _register_addon(self, addon):
-       self.product._register_addon(addon)
+        self.product._register_addon(addon)
 
     def remove_addon(self, id_):
         self.product.remove_addon(id_)
         if self.product.id_ == id_:
             self.product = self.product.product
         elif self.id_ == id_:
-            raise ValueError("Cannot remove head object from chain of references")
+            raise ValueError(
+                    "Cannot remove head object from chain of references"
+                )
 
     @property
     def calculated_cost(self):
@@ -257,6 +314,11 @@ class Addon(Product):
     def update_(self):
         pass
 
+
+class ProductProxy(Addon):
+    pass
+
+
 class SettingsModel:
     """A model for saving settings"""
 
@@ -278,7 +340,7 @@ class SettingsModel:
         """Set a variable value"""
         if (
             key in self.variables and
-            type(value).__name__==self.variables[key]['type']
+            type(value).__name__ == self.variables[key]['type']
         ):
             self.variables[key]['value'] = value
         else:
@@ -286,7 +348,7 @@ class SettingsModel:
 
     def save(self, settings=None):
         """Save current settings to file."""
-        json_string=json.dumps(self.variables)
+        json_string = json.dumps(self.variables)
         with open(self.filepath, 'w', encoding='utf-8') as fh:
             fh.write(json_string)
 
@@ -307,17 +369,19 @@ class SettingsModel:
                 raw_value = raw_values[key]['value']
                 self.variables[key]['value'] = raw_value
 
+
 @logged
 class CostFormula:
     def __init__(self, formula, variables):
         self.variables = variables
         self.formula = formula
 
-        self.logger.debug("[init] formula {0}, variables {1}".format(
-                formula,
-                variables,
-            )
-        )
+        self.logger.debug("[init] formula {0}, variables {1}"
+                          .format(
+                              formula,
+                              variables,
+                            )
+                          )
 
     @property
     def formula(self):
@@ -331,12 +395,13 @@ class CostFormula:
     def get_cost(self):
         hard = CostFormula._get_hard(self.formula, self.variables)
         fi.parse(hard)
-        self.logger.debug('[get_cost] parsed {0} ({1}) -> {2}'.format(
-                self.formula,
-                hard,
-                fi.value,
-            )
-        )
+        self.logger.debug("[get_cost] parsed {0} ({1}) -> {2}"
+                          .format(
+                              self.formula,
+                              hard,
+                              fi.value,
+                            )
+                          )
         return fi.value
 
     @staticmethod
