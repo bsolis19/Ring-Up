@@ -1,4 +1,4 @@
-from ringup.application import Application
+from ringup_bsolis19.application import Application
 
 app = Application()
 app.mainloop()

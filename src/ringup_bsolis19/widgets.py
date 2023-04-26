@@ -1,8 +1,8 @@
-"""Widgets for ringup GUI."""
+"""Widgets for ringup_bsolis19 GUI."""
 
 import tkinter as tk
 
-from ringup.lib.observables import ObserverMixin
+from ringup_bsolis19.lib.observables import ObserverMixin
 
 DEFAULT_FONT = ("Calibri", 18)
 

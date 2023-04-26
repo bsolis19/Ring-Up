@@ -1,1 +1,0 @@
-from ringup.models import *

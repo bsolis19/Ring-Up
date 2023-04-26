@@ -1,4 +1,4 @@
-"""Views for ringup project."""
+"""Views for ringup_bsolis19 project."""
 
 import tkinter as tk
 
@@ -113,7 +113,7 @@ class Form(tk.Frame):
 
 
 class ProductForm(Form):
-    """The main input form for ringup."""
+    """The main input form for ringup_bsolis19."""
     def __init__(self, parent, model, settings, callbacks, *args, **kwargs):
         super().__init__(parent, model, settings, callbacks, *args, **kwargs)
 
@@ -297,7 +297,7 @@ class ProductForm(Form):
 
 
 class AddonForm(Form):
-    """The addon input form for ringup."""
+    """The addon input form for ringup_bsolis19."""
     def __init__(
             self,
             parent,

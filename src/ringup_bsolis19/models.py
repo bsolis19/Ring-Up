@@ -1,14 +1,14 @@
-"""Data models for ringup project"""
+"""Data models for ringup_bsolis19 project"""
 
 import os
 import json
 import re
 
-import ringup.lib.formula as fi
+import ringup_bsolis19.lib.formula as fi
 
 from collections import OrderedDict
-from ringup.lib.observables import ObservableMixin, ObserverMixin
-from ringup.lib.log import logged
+from ringup_bsolis19.lib.observables import ObservableMixin, ObserverMixin
+from ringup_bsolis19.lib.log import logged
 
 
 @logged
@@ -329,7 +329,7 @@ class SettingsModel:
             },
         }
 
-    def __init__(self, filename='ringup_settings.json', path='~'):
+    def __init__(self, filename='ringup_bsolis19_settings.json', path='~'):
         # determine file path
         self.filepath = os.path.join(os.path.expanduser(path), filename)
 
